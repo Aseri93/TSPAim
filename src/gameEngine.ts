@@ -1,54 +1,6 @@
 // Pure game engine - no React, just game logic and canvas rendering
 
-import { Scenario } from './scenarios';
-
-export interface Target {
-    id: string;
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    size: number;
-    hit: boolean;
-    label?: string; // Optional label for specific scenarios
-}
-
-// Anti-Cheat: Replay Data
-export interface ReplayEvent {
-    t: number; // Timestamp (relative to start)
-    type: 'move' | 'click' | 'hit' | 'spawn';
-    x: number;
-    y: number;
-    meta?: any; // Extra data like target ID
-}
-
-export interface GameState {
-    phase: 'idle' | 'playing' | 'ended';
-    targets: Target[];
-    optimalPath: Target[]; // TSP-ordered targets
-    renderPath: { x: number; y: number; targetId: string }[]; // Interpolated positions for smooth rendering
-    score: number;
-    hits: number;
-    shots: number;
-    timeElapsed: number;
-    trackingTime: number;
-    trackingTotal: number;
-    // Reaction test metrics
-    lastHitTime: number; // Time when signal appeared (red screen or target spawn)
-    reactionTimes: number[];
-    nextSpawnTime: number; // For random delays
-    message?: string; // "Wait...", "CLICK!", "Too Early!"
-    isRed?: boolean; // For visual reaction test
-    cursorX: number;
-    cursorY: number;
-    width: number;
-    height: number;
-    showPath: boolean;
-    replayLog: ReplayEvent[]; // Full input log for verification
-    // Adaptive tracking
-    adaptiveSpeed: number; // Current speed multiplier (1.0 = base)
-    adaptiveScore: number; // Accumulated score based on speed
-}
+import { Scenario, GameState, Target } from './types';
 
 // Distance between two points
 export function dist(x1: number, y1: number, x2: number, y2: number): number {
@@ -591,4 +543,13 @@ export function renderGame(
         ctx.fillStyle = isOnTarget ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)';
         ctx.fill();
     }
+}
+
+// Helper to calculate accuracy based on scenario type
+export function getAccuracy(state: GameState, scenario: Scenario): number {
+    if (scenario.scoring === 'tracking' || scenario.scoring === 'adaptive') {
+        return state.trackingTotal > 0 ? (state.trackingTime / state.trackingTotal) * 100 : 0;
+    }
+    // Default click accuracy
+    return state.shots > 0 ? (state.hits / state.shots) * 100 : 0;
 }

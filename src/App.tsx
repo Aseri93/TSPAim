@@ -1,32 +1,14 @@
 import { useState, useEffect } from 'preact/hooks';
-import { scenarios, Scenario } from './scenarios';
+import { scenarios } from './scenarios';
 import Game from './Game';
 import Leaderboard from './Leaderboard';
 import './index.css';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { Session } from '@supabase/supabase-js';
-import { ReplayEvent } from './gameEngine';
 import AuthModal from './AuthModal';
+import { GameResults, Scenario } from './types';
 
 type AppPhase = 'select' | 'playing' | 'results' | 'leaderboard';
-
-interface GameResults {
-    scenario: Scenario;
-    primary: number;
-    label: string;
-    secondary?: number;
-    secondaryLabel?: string;
-    hits: number;
-    shots: number;
-    timeElapsed: number;
-    replayLog?: ReplayEvent[]; // Anti-cheat data
-    // Performance Metadata
-    mouseDpi?: number;
-    viewportW?: number;
-    viewportH?: number;
-    devicePixelRatio?: number;
-    viewScale?: number;
-}
 
 
 

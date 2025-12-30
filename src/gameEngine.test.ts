@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { dist, solveTSP, calculateScore, calculatePathLength } from './gameEngine';
-import { Scenario } from './scenarios';
+import { Scenario } from './types';
 
 describe('Game Engine Logic', () => {
     it('calculates distance correctly', () => {

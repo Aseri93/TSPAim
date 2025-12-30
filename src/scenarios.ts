@@ -1,20 +1,5 @@
 // Scenario definitions for aim trainer
-
-export interface Scenario {
-  id: string;
-  name: string;
-  description: string;
-  duration: number; // seconds
-  targetCount: number;
-  targetSize: number; // base size at 1080p
-  movement: 'static' | 'strafe' | 'smooth';
-  scoring: 'tps' | 'accuracy' | 'tracking' | 'benchmark' | 'reaction' | 'adaptive';
-  speed?: number; // movement speed for non-static scenarios
-  autoPlay?: boolean; // if true, scenario plays itself (for benchmarks)
-  clickLimit?: number; // End game after N clicks (for reaction test)
-  noRespawn?: boolean; // If true, targets don't respawn on hit
-  pattern?: 'grid' | 'circle' | 'grubby'; // Custom spawn pattern
-}
+import { Scenario } from './types';
 
 export const scenarios: Scenario[] = [
   {

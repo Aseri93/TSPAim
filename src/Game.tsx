@@ -1,7 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from 'preact/hooks';
-import { Scenario } from './scenarios';
 import {
-    GameState,
     createGameState,
     updateTargets,
     checkHit,
@@ -13,8 +11,9 @@ import {
     calculatePathLength,
     updateRenderPath,
     createTarget,
-    Target
+    getAccuracy
 } from './gameEngine';
+import { GameState, Target, Scenario } from './types';
 
 interface GameProps {
     scenario: Scenario;
@@ -405,9 +404,8 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                 });
             } else if (now - hudUpdateTime > 100) {
                 hudUpdateTime = now;
-                const accuracy = scenario.scoring === 'tracking' || scenario.scoring === 'adaptive'
-                    ? (state.trackingTotal > 0 ? (state.trackingTime / state.trackingTotal) * 100 : 0)
-                    : (state.shots > 0 ? (state.hits / state.shots) * 100 : 0);
+                const accuracy = getAccuracy(state, scenario);
+
                 setHudState(prev => ({
                     ...prev,
                     hits: state.hits,
