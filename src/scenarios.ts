@@ -1,0 +1,135 @@
+// Scenario definitions for aim trainer
+
+export interface Scenario {
+  id: string;
+  name: string;
+  description: string;
+  duration: number; // seconds
+  targetCount: number;
+  targetSize: number; // base size at 1080p
+  movement: 'static' | 'strafe' | 'smooth';
+  scoring: 'tps' | 'accuracy' | 'tracking' | 'benchmark' | 'reaction';
+  speed?: number; // movement speed for non-static scenarios
+  autoPlay?: boolean; // if true, scenario plays itself (for benchmarks)
+  clickLimit?: number; // End game after N clicks (for reaction test)
+  noRespawn?: boolean; // If true, targets don't respawn on hit
+  pattern?: 'grid' | 'circle' | 'grubby'; // Custom spawn pattern
+}
+
+export const scenarios: Scenario[] = [
+  {
+    id: 'static-grid',
+    name: 'Static Grid',
+    description: 'Click static targets as fast as possible. Targets respawn on hit.',
+    duration: 30,
+    targetCount: 6,
+    targetSize: 25,
+    movement: 'static',
+    scoring: 'tps',
+  },
+  {
+    id: 'tiny-15s',
+    name: 'Tiny 15s',
+    description: '15 seconds. Tiny targets. Mimics mouseaccuracy.com tiny mode.',
+    duration: 15,
+    targetCount: 10,
+    targetSize: 12,
+    movement: 'static',
+    scoring: 'tps',
+  },
+  {
+    id: 'strafing-click',
+    name: 'Strafing Click',
+    description: 'Hit targets that move left and right. Tests prediction and timing.',
+    duration: 30,
+    targetCount: 6,
+    targetSize: 30,
+    movement: 'strafe',
+    scoring: 'accuracy',
+    speed: 5,
+  },
+  {
+    id: 'smooth-track',
+    name: 'Smooth Track',
+    description: 'Keep your cursor on the target. No clicking required.',
+    duration: 30,
+    targetCount: 1,
+    targetSize: 40,
+    movement: 'smooth',
+    scoring: 'tracking',
+    speed: 2,
+  },
+  {
+    id: 'benchmark',
+    name: '⚡ Benchmark',
+    description: 'Auto-plays to test performance. Logs FPS, frame times, and render stats.',
+    duration: 10,
+    targetCount: 6,
+    targetSize: 25,
+    movement: 'static',
+    scoring: 'benchmark',
+    autoPlay: true,
+  },
+  {
+    id: 'reaction',
+    name: '🎯 Reaction Test',
+    description: 'Best of 5. Target appears, click anywhere to react. Random delays.',
+    duration: 60, // Fallback duration
+    targetCount: 1,
+    targetSize: 40,
+    movement: 'static',
+    scoring: 'reaction',
+    clickLimit: 5,
+  },
+  {
+    id: 'visual-reaction',
+    name: '⚡ Visual Reaction',
+    description: 'Best of 5. Wait for the screen to turn RED, then click!',
+    duration: 60,
+    targetCount: 0, // No targets
+    targetSize: 0,
+    movement: 'static',
+    scoring: 'reaction',
+    clickLimit: 5,
+  },
+  {
+    id: 'target-frenzy-100',
+    name: 'Target Frenzy 100',
+    description: '100 static targets spawned at once. Clear them all as fast as possible.',
+    duration: 999,
+    targetCount: 100,
+    targetSize: 20,
+    movement: 'static',
+    scoring: 'tps',
+    clickLimit: 100,
+    noRespawn: true,
+  },
+  {
+    id: 'strafing-frenzy-100',
+    name: '🌀 Strafing Frenzy 100',
+    description: '100 moving targets! They strafe left and right. Clear them all.',
+    duration: 999,
+    targetCount: 100,
+    targetSize: 22,
+    movement: 'strafe',
+    scoring: 'tps',
+    speed: 4,
+    clickLimit: 100,
+    noRespawn: true,
+  },
+  {
+    id: 'grubby-rts',
+    name: '👑 Grubby RTS Calibration',
+    description: 'Balance speed & accuracy. Ensure a comfortable circle on your mousepad covers the entire screen. Click edges to test.',
+    duration: 60,
+    targetCount: 9,
+    targetSize: 30, // Large targets for calibration
+    movement: 'static',
+    scoring: 'accuracy',
+    pattern: 'grubby',
+  },
+];
+
+export function getScenario(id: string): Scenario | undefined {
+  return scenarios.find(s => s.id === id);
+}
