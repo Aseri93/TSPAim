@@ -2,7 +2,7 @@
 
 Free browser-based aim trainer with Kovaaks-style scenarios. No download required.
 
-🎯 **[Play Now →](https://your-url-here.vercel.app)** *(Update after deployment)*
+🎯 **[Play Now →](https://tsp-aim.vercel.app)**
 
 ## Features
 
