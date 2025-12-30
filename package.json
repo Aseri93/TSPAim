@@ -10,11 +10,12 @@
     "check-all": "npm run build && npm run test"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.89.0",
     "preact": "^10.16.0"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.5.0",
+    "@supabase/supabase-js": "^2.89.0",
+    "dotenv": "^17.2.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vitest": "^4.0.16"

@@ -6,6 +6,7 @@ import './index.css';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { ReplayEvent } from './gameEngine';
+import AuthModal from './AuthModal';
 
 type AppPhase = 'select' | 'playing' | 'results' | 'leaderboard';
 
@@ -97,17 +98,10 @@ export default function App() {
         }
     }, []);
 
-    const handleLogin = async () => {
-        if (!isSupabaseConfigured) {
-            alert("Supabase keys not configured in .env.local! Check README.");
-            return;
-        }
-        const email = prompt("Enter email for Magic Link");
-        if (email && supabase) {
-            const { error } = await supabase.auth.signInWithOtp({ email });
-            if (error) alert(error.message);
-            else alert("Check your email for the login link!");
-        }
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+    const handleLogin = () => {
+        setIsAuthModalOpen(true);
     };
 
     const handleLogout = async () => {
@@ -375,6 +369,7 @@ export default function App() {
                         </button>
                     ))}
                 </div>
+                {isAuthModalOpen && <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
             </div>
         );
     }
