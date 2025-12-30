@@ -115,10 +115,12 @@ export default function App() {
             await saveGuestScore(gameResults, nickname.trim());
         }
 
-        // 2. Try Global Supabase save if logged in AND new best
-        if (isNewBest && session && supabase && isSupabaseConfigured) {
+        // 2. Try Global Supabase save if logged in OR nickname provided AND new best
+        // Arcade Mode: Allow anonymous saves with nickname
+        if (isNewBest && nickname.trim() && supabase && isSupabaseConfigured) {
             const { error } = await supabase.from('scores').insert({
-                user_id: session.user.id,
+                user_id: session?.user.id || null, // Allow null for guests
+                nickname: nickname.trim(), // Save the nickname
                 scenario_id: scenario.id,
                 score: primary,
                 replay_data: replayLog || null,
@@ -238,6 +240,7 @@ export default function App() {
                         </div>
 
                         {isSupabaseConfigured && (
+                            /* Arcade Mode: Auth hidden for now
                             <div className="auth-section" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}>
                                 {isAuthLoading ? (
                                     <span>Loading...</span>
@@ -252,6 +255,8 @@ export default function App() {
                                     </button>
                                 )}
                             </div>
+                            */
+                            null
                         )}
                     </div>
 
