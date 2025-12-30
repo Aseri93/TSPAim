@@ -82,7 +82,9 @@ export default function App() {
 
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-    const handleLogin = () => {
+    const handleLogin = (e: any) => {
+        e.preventDefault();
+        e.stopPropagation();
         setIsAuthModalOpen(true);
     };
 
