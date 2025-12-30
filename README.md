@@ -20,6 +20,7 @@ Free browser-based aim trainer with Kovaaks-style scenarios. No download require
 | **Tiny 15s** | Click | 10 tiny targets, 15 seconds |
 | **Strafing Click** | Click | Targets move left/right |
 | **Smooth Track** | Tracking | Keep cursor on moving target |
+| **🔥 Adaptive Track** | Tracking | Speed increases with accuracy! |
 | **Reaction Test** | Reaction | Click when target appears |
 | **Visual Reaction** | Reaction | Click when screen turns red |
 | **Target Frenzy 100** | Frenzy | Clear 100 static targets |

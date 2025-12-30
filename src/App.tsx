@@ -253,22 +253,14 @@ export default function App() {
         return (
             <div className="app">
                 <header className="header">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                        <div>
+                    <div style={{ position: 'relative', width: '100%' }}>
+                        <div style={{ textAlign: 'center' }}>
                             <h1> ILY :) </h1>
                             <p className="subtitle">Select a scenario</p>
                         </div>
 
-                        <div style={{ display: 'flex', gap: 15, alignItems: 'center' }}>
-                            <button
-                                className="btn-secondary"
-                                style={{ padding: '6px 12px', fontSize: 13 }}
-                                onClick={() => setPhase('leaderboard')}
-                            >
-                                Leaderboards 🏆
-                            </button>
-
-                            <div className="auth-section">
+                        {isSupabaseConfigured && (
+                            <div className="auth-section" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}>
                                 {isAuthLoading ? (
                                     <span>Loading...</span>
                                 ) : session ? (
@@ -277,12 +269,12 @@ export default function App() {
                                         <button onClick={handleLogout} className="btn-small">Logout</button>
                                     </div>
                                 ) : (
-                                    <button onClick={handleLogin} className="btn-small" style={{ opacity: isSupabaseConfigured ? 1 : 0.5 }}>
-                                        {isSupabaseConfigured ? "Login / Sign Up" : "Offline Mode"}
+                                    <button onClick={handleLogin} className="btn-small">
+                                        Login / Sign Up
                                     </button>
                                 )}
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     <div className="fps-selector" style={{ marginTop: 20 }}>
@@ -346,6 +338,16 @@ export default function App() {
                                     outline: 'none'
                                 }}
                             />
+                        </div>
+
+                        <div style={{ marginTop: 20 }}>
+                            <button
+                                className="btn-secondary"
+                                style={{ padding: '8px 16px', fontSize: 13 }}
+                                onClick={() => setPhase('leaderboard')}
+                            >
+                                Leaderboards 🏆
+                            </button>
                         </div>
                     </div>
                 </header>

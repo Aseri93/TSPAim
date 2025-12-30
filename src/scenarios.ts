@@ -8,7 +8,7 @@ export interface Scenario {
   targetCount: number;
   targetSize: number; // base size at 1080p
   movement: 'static' | 'strafe' | 'smooth';
-  scoring: 'tps' | 'accuracy' | 'tracking' | 'benchmark' | 'reaction';
+  scoring: 'tps' | 'accuracy' | 'tracking' | 'benchmark' | 'reaction' | 'adaptive';
   speed?: number; // movement speed for non-static scenarios
   autoPlay?: boolean; // if true, scenario plays itself (for benchmarks)
   clickLimit?: number; // End game after N clicks (for reaction test)
@@ -58,6 +58,17 @@ export const scenarios: Scenario[] = [
     movement: 'smooth',
     scoring: 'tracking',
     speed: 2,
+  },
+  {
+    id: 'adaptive-track',
+    name: '🔥 Adaptive Track',
+    description: 'Speed increases with accuracy! Higher speed = more points. Can you keep up?',
+    duration: 30,
+    targetCount: 1,
+    targetSize: 45,
+    movement: 'smooth',
+    scoring: 'adaptive',
+    speed: 1.5, // Base speed (will be multiplied by adaptiveSpeed)
   },
   {
     id: 'benchmark',

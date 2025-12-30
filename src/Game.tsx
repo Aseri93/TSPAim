@@ -57,7 +57,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
     const [isPlaying, setIsPlaying] = useState(false);
     const [countdown, setCountdown] = useState(3);
     const countdownRef = useRef(3);
-    const [hudState, setHudState] = useState({ hits: 0, time: 0, fps: 0, pathLength: 0, accuracy: 0 });
+    const [hudState, setHudState] = useState({ hits: 0, time: 0, fps: 0, pathLength: 0, accuracy: 0, adaptiveSpeed: 1.0, adaptiveScore: 0 });
     const [viewScale, setViewScale] = useState(1);
     const viewScaleRef = useRef(1);
 
@@ -341,6 +341,33 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                 state.trackingTotal += deltaTime;
             }
 
+            // Adaptive tracking: speed scales with accuracy, score scales with speed
+            if (scenario.scoring === 'adaptive') {
+                const target = state.targets[0];
+                const isOnTarget = target && isCursorOnTarget(state.cursorX, state.cursorY, target);
+
+                if (isOnTarget) {
+                    state.trackingTime += deltaTime;
+                    // Increase speed when on target (up to 5x)
+                    state.adaptiveSpeed = Math.min(5.0, state.adaptiveSpeed + deltaTime * 0.002);
+                    // Accumulate score based on current speed
+                    state.adaptiveScore += deltaTime * state.adaptiveSpeed * 0.1;
+                } else {
+                    // Decrease speed when off target (min 0.5x)
+                    state.adaptiveSpeed = Math.max(0.5, state.adaptiveSpeed - deltaTime * 0.004);
+                }
+                state.trackingTotal += deltaTime;
+
+                // Apply adaptive speed to target movement
+                if (target) {
+                    const baseSpeed = scenario.speed || 2;
+                    const adaptedSpeed = baseSpeed * state.adaptiveSpeed;
+                    const angle = Math.atan2(target.vy, target.vx);
+                    target.vx = Math.cos(angle) * adaptedSpeed;
+                    target.vy = Math.sin(angle) * adaptedSpeed;
+                }
+            }
+
             if (scenario.movement !== 'static') {
                 state.optimalPath = solveTSP(state.targets, state.cursorX, state.cursorY);
             }
@@ -364,16 +391,31 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                 frameCountRef.current = 0;
                 fpsTimeRef.current = now;
                 const pathLen = state.showPath ? calculatePathLength(state.optimalPath, state.cursorX, state.cursorY) : 0;
-                const accuracy = scenario.scoring === 'tracking'
+                const accuracy = scenario.scoring === 'tracking' || scenario.scoring === 'adaptive'
                     ? (state.trackingTotal > 0 ? (state.trackingTime / state.trackingTotal) * 100 : 0)
                     : (state.shots > 0 ? (state.hits / state.shots) * 100 : 0);
-                setHudState({ hits: state.hits, time: Math.floor(state.timeElapsed / 1000), fps, pathLength: pathLen, accuracy: Math.round(accuracy) });
+                setHudState({
+                    hits: state.hits,
+                    time: Math.floor(state.timeElapsed / 1000),
+                    fps,
+                    pathLength: pathLen,
+                    accuracy: Math.round(accuracy),
+                    adaptiveSpeed: state.adaptiveSpeed,
+                    adaptiveScore: state.adaptiveScore
+                });
             } else if (now - hudUpdateTime > 100) {
                 hudUpdateTime = now;
-                const accuracy = scenario.scoring === 'tracking'
+                const accuracy = scenario.scoring === 'tracking' || scenario.scoring === 'adaptive'
                     ? (state.trackingTotal > 0 ? (state.trackingTime / state.trackingTotal) * 100 : 0)
                     : (state.shots > 0 ? (state.hits / state.shots) * 100 : 0);
-                setHudState(prev => ({ ...prev, hits: state.hits, time: Math.floor(state.timeElapsed / 1000), accuracy: Math.round(accuracy) }));
+                setHudState(prev => ({
+                    ...prev,
+                    hits: state.hits,
+                    time: Math.floor(state.timeElapsed / 1000),
+                    accuracy: Math.round(accuracy),
+                    adaptiveSpeed: state.adaptiveSpeed,
+                    adaptiveScore: state.adaptiveScore
+                }));
             }
 
             scheduleNext();
@@ -584,16 +626,22 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                                         transform: `translate3d(${target.x}px, ${target.y}px, 0) translate(-50%, -50%)`,
                                     } as any}
                                 >
-                                    {isPlaying && (target.label || (gameStateRef.current?.showPath && pathIndex >= 0)) && (
-                                        <span style={{
-                                            color: isFirst ? 'rgba(34, 197, 94, 1)' : 'rgba(255, 255, 255, 0.8)',
-                                            fontSize: Math.max(10, target.size * (target.label === 'CENTER' ? 0.25 : 0.4)),
-                                            fontWeight: 'bold',
-                                            pointerEvents: 'none'
-                                        }}>
-                                            {target.label || (pathIndex + 1)}
-                                        </span>
-                                    )}
+                                    {isPlaying && (target.label || (gameStateRef.current?.showPath && pathIndex >= 0)) && (() => {
+                                        const labelText = target.label || String(pathIndex + 1);
+                                        const isLongNumber = labelText.length >= 3;
+                                        const baseFontSize = target.size * (target.label === 'CENTER' ? 0.25 : 0.4);
+                                        const fontSize = isLongNumber ? Math.max(8, baseFontSize * 0.65) : Math.max(10, baseFontSize);
+                                        return (
+                                            <span style={{
+                                                color: isFirst ? 'rgba(34, 197, 94, 1)' : 'rgba(255, 255, 255, 0.8)',
+                                                fontSize,
+                                                fontWeight: 'bold',
+                                                pointerEvents: 'none'
+                                            }}>
+                                                {labelText}
+                                            </span>
+                                        );
+                                    })()}
                                 </div>
                             );
                         })}
@@ -616,9 +664,25 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             {isPlaying && (
                 <div className="game-hud">
                     <div className="hud-item">
-                        <span className="hud-value">{scenario.scoring === 'tracking' ? `${hudState.accuracy}%` : hudState.hits}</span>
-                        <span className="hud-label">{scenario.scoring === 'tracking' ? 'Track' : 'Hits'}</span>
+                        <span className="hud-value">
+                            {scenario.scoring === 'adaptive'
+                                ? Math.round(hudState.adaptiveScore)
+                                : scenario.scoring === 'tracking'
+                                    ? `${hudState.accuracy}%`
+                                    : hudState.hits}
+                        </span>
+                        <span className="hud-label">
+                            {scenario.scoring === 'adaptive' ? 'Score' : scenario.scoring === 'tracking' ? 'Track' : 'Hits'}
+                        </span>
                     </div>
+                    {scenario.scoring === 'adaptive' && (
+                        <div className="hud-item">
+                            <span className="hud-value" style={{ color: hudState.adaptiveSpeed >= 3 ? '#22c55e' : hudState.adaptiveSpeed <= 1 ? '#ef4444' : '#fff' }}>
+                                {hudState.adaptiveSpeed.toFixed(1)}x
+                            </span>
+                            <span className="hud-label">Speed</span>
+                        </div>
+                    )}
                     <div className="hud-item">
                         <span className="hud-value">{scenario.duration - hudState.time}s</span>
                         <span className="hud-label">Time</span>

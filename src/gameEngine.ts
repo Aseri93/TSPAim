@@ -45,6 +45,9 @@ export interface GameState {
     height: number;
     showPath: boolean;
     replayLog: ReplayEvent[]; // Full input log for verification
+    // Adaptive tracking
+    adaptiveSpeed: number; // Current speed multiplier (1.0 = base)
+    adaptiveScore: number; // Accumulated score based on speed
 }
 
 // Distance between two points
@@ -211,6 +214,8 @@ export function createGameState(
         height,
         showPath: (scenario.movement === 'static' || scenario.movement === 'strafe') && scenario.id !== 'grubby-rts',
         replayLog: [],
+        adaptiveSpeed: 1.0,
+        adaptiveScore: 0,
     };
 }
 
@@ -419,6 +424,16 @@ export function calculateScore(state: GameState, scenario: Scenario): {
                 label: 'Avg Reaction (ms)',
                 secondary: state.reactionTimes.length > 0 ? Math.min(...state.reactionTimes) : 0,
                 secondaryLabel: 'Best (ms)',
+            };
+        case 'adaptive':
+            const adaptiveTrackPct = state.trackingTotal > 0
+                ? +((state.trackingTime / state.trackingTotal) * 100).toFixed(1)
+                : 0;
+            return {
+                primary: Math.round(state.adaptiveScore),
+                label: 'Adaptive Score',
+                secondary: adaptiveTrackPct,
+                secondaryLabel: 'Tracking %',
             };
         default:
             return { primary: state.score, label: 'Score' };
