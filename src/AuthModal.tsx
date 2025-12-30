@@ -29,7 +29,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         if (error) {
             setMessage({ text: error.message, type: 'error' });
         } else {
-            setMessage({ text: "Magic link sent! Check your email.", type: 'success' });
+            setMessage({ text: "Check your inbox! Click the link to log in.", type: 'success' });
             setEmail('');
         }
         setLoading(false);
@@ -40,13 +40,17 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <button className="close-btn" onClick={onClose}>&times;</button>
 
-                <h2 className="modal-title">Sign In</h2>
-                <p className="modal-subtitle">Save your scores to the global leaderboard.</p>
+                <h2 className="modal-title">Welcome Back</h2>
+                <p className="modal-subtitle">
+                    Enter your email to sign in or create an account.
+                    <br />
+                    <span style={{ fontSize: '0.9em', opacity: 0.8 }}>We'll email you a secure link. No password needed.</span>
+                </p>
 
                 <form onSubmit={handleLogin} className="auth-form">
                     <input
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder="name@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.currentTarget.value)}
                         className="auth-input"
@@ -54,7 +58,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     />
 
                     <button type="submit" className="auth-submit-btn" disabled={loading}>
-                        {loading ? 'Sending...' : 'Send Magic Link'}
+                        {loading ? 'Sending...' : 'Email Me a Login Link'}
                     </button>
                 </form>
 
