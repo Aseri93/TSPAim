@@ -10,6 +10,7 @@ export interface Scenario {
     targetSize: number; // base size at 1080p
     movement: 'static' | 'strafe' | 'smooth';
     scoring: 'tps' | 'accuracy' | 'tracking' | 'benchmark' | 'reaction' | 'adaptive';
+    category: 'precision' | 'speed' | 'tracking' | 'challenge' | 'calibration';
     speed?: number; // movement speed for non-static scenarios
     autoPlay?: boolean; // if true, scenario plays itself (for benchmarks)
     clickLimit?: number; // End game after N clicks (for reaction test)

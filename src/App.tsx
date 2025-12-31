@@ -48,6 +48,23 @@ export default function App() {
     const [, setScoresVersion] = useState(0);
     // Counter to force fresh Game instances
     const [gameKey, setGameKey] = useState(0);
+    // Category filter for scenario navigation
+    const [activeCategory, setActiveCategory] = useState<Scenario['category'] | 'all'>('all');
+
+    // Category definitions for tabs
+    const categories: { id: Scenario['category'] | 'all'; label: string }[] = [
+        { id: 'all', label: 'All' },
+        { id: 'precision', label: 'Precision' },
+        { id: 'speed', label: 'Speed' },
+        { id: 'tracking', label: 'Tracking' },
+        { id: 'challenge', label: 'Challenge' },
+        { id: 'calibration', label: 'Calibration' },
+    ];
+
+    // Filter scenarios by active category
+    const filteredScenarios = activeCategory === 'all'
+        ? scenarios
+        : scenarios.filter(s => s.category === activeCategory);
 
     // Auth State
     const [session, setSession] = useState<Session | null>(null);
@@ -232,131 +249,145 @@ export default function App() {
     if (phase === 'select') {
         return (
             <div className="app">
-                <header className="header">
-                    <div style={{ position: 'relative', width: '100%' }}>
-                        <div style={{ textAlign: 'center' }}>
-                            <h1> ILY :) </h1>
-                            <p className="subtitle">Select a scenario</p>
-                        </div>
-
-                        {isSupabaseConfigured && (
-                            <div className="auth-section" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}>
-                                {isAuthLoading ? (
-                                    <span>Loading...</span>
-                                ) : session ? (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                        <span style={{ fontSize: 14 }}>{session.user.email?.split('@')[0]}</span>
-                                        <button onClick={handleLogout} className="btn-small">Logout</button>
-                                    </div>
-                                ) : (
-                                    <button type="button" onClick={handleLogin} className="btn-small">
-                                        Login / Sign Up
-                                    </button>
-                                )}
+                {/* Fixed top-right auth button */}
+                {isSupabaseConfigured && (
+                    <div className="auth-floating">
+                        {isAuthLoading ? (
+                            <span className="auth-loading">Loading...</span>
+                        ) : session ? (
+                            <div className="auth-user">
+                                <span className="auth-username">{session.user.email?.split('@')[0]}</span>
+                                <button onClick={handleLogout} className="auth-btn">Sign Out</button>
                             </div>
+                        ) : (
+                            <button type="button" onClick={handleLogin} className="auth-btn">
+                                Sign In
+                            </button>
                         )}
                     </div>
+                )}
 
-                    <div className="fps-selector" style={{ marginTop: 20 }}>
-                        <label style={{ fontSize: 12, marginRight: 10, color: 'rgba(255,255,255,0.5)' }}>MAX FPS</label>
-                        <select
-                            value={fpsLimit}
-                            onChange={(e) => setFpsLimit(Number(e.currentTarget.value))}
-                        >
-                            <option value={0}>Unlimited</option>
-                            <option value={60}>60 FPS</option>
-                            <option value={120}>120 FPS</option>
-                            <option value={144}>144 FPS</option>
-                            <option value={165}>165 FPS</option>
-                            <option value={200}>200 FPS</option>
-                            <option value={240}>240 FPS</option>
-                            <option value={360}>360 FPS</option>
-                        </select>
-                        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 8 }}>
-                            Tip: For the best experience, we recommend not using fullscreen yet. ily :)
-                        </p>
-
-                        <div style={{ marginTop: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                            <label style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>PLAYER NAME</label>
-                            <input
-                                type="text"
-                                placeholder="Enter nickname"
-                                value={nickname}
-                                onInput={(e) => {
-                                    const val = e.currentTarget.value.slice(0, 15);
-                                    setNickname(val);
-                                    localStorage.setItem('tspaim_nickname', val);
-                                }}
-                                style={{
-                                    background: 'rgba(255,255,255,0.05)',
-                                    border: '1px solid var(--border)',
-                                    color: '#fff',
-                                    width: 140,
-                                    padding: '4px 8px',
-                                    borderRadius: 4,
-                                    fontSize: 13,
-                                    outline: 'none',
-                                    textAlign: 'center'
-                                }}
-                            />
-                        </div>
-
-                        <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                            <label style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>MOUSE DPI</label>
-                            <input
-                                type="number"
-                                value={mouseDpi}
-                                onInput={(e) => setMouseDpi(parseInt(e.currentTarget.value) || 0)}
-                                style={{
-                                    background: 'rgba(255,255,255,0.05)',
-                                    border: '1px solid var(--border)',
-                                    color: '#fff',
-                                    width: 80,
-                                    padding: '4px 8px',
-                                    borderRadius: 4,
-                                    fontSize: 13,
-                                    outline: 'none'
-                                }}
-                            />
-                        </div>
-
-                        <div style={{ marginTop: 20 }}>
-                            <button
-                                className="btn-secondary"
-                                style={{ padding: '8px 16px', fontSize: 13 }}
-                                onClick={() => setPhase('leaderboard')}
-                            >
-                                Leaderboards 🏆
-                            </button>
-                        </div>
-                    </div>
+                <header className="header">
+                    <h1>TSP Aim Trainer</h1>
+                    <p className="subtitle">Optimal Path Training</p>
                 </header>
 
-                <div className="scenario-grid">
-                    {scenarios.map(scenario => (
+                <div className="fps-selector" style={{ marginTop: 20 }}>
+                    <label style={{ fontSize: 12, marginRight: 10, color: 'rgba(255,255,255,0.5)' }}>MAX FPS</label>
+                    <select
+                        value={fpsLimit}
+                        onChange={(e) => setFpsLimit(Number(e.currentTarget.value))}
+                    >
+                        <option value={0}>Unlimited</option>
+                        <option value={60}>60 FPS</option>
+                        <option value={120}>120 FPS</option>
+                        <option value={144}>144 FPS</option>
+                        <option value={165}>165 FPS</option>
+                        <option value={200}>200 FPS</option>
+                        <option value={240}>240 FPS</option>
+                        <option value={360}>360 FPS</option>
+                    </select>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 8 }}>
+                        Tip: For the best experience, we recommend not using fullscreen yet. ily :)
+                    </p>
+
+                    <div style={{ marginTop: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                        <label style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>PLAYER NAME</label>
+                        <input
+                            type="text"
+                            placeholder="Enter nickname"
+                            value={nickname}
+                            onInput={(e) => {
+                                const val = e.currentTarget.value.slice(0, 15);
+                                setNickname(val);
+                                localStorage.setItem('tspaim_nickname', val);
+                            }}
+                            style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid var(--border)',
+                                color: '#fff',
+                                width: 140,
+                                padding: '4px 8px',
+                                borderRadius: 4,
+                                fontSize: 13,
+                                outline: 'none',
+                                textAlign: 'center'
+                            }}
+                        />
+                    </div>
+
+                    <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                        <label style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>MOUSE DPI</label>
+                        <input
+                            type="number"
+                            value={mouseDpi}
+                            onInput={(e) => setMouseDpi(parseInt(e.currentTarget.value) || 0)}
+                            style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid var(--border)',
+                                color: '#fff',
+                                width: 80,
+                                padding: '4px 8px',
+                                borderRadius: 4,
+                                fontSize: 13,
+                                outline: 'none'
+                            }}
+                        />
+                    </div>
+
+                    <div style={{ marginTop: 20 }}>
                         <button
-                            key={scenario.id}
-                            className="scenario-card"
-                            onClick={() => handleSelectScenario(scenario)}
+                            className="btn-secondary"
+                            style={{ padding: '8px 16px', fontSize: 13 }}
+                            onClick={() => setPhase('leaderboard')}
                         >
-                            <h2>{scenario.name}</h2>
-                            <p>{scenario.description}</p>
-                            <div className="scenario-meta">
-                                <span>{scenario.duration}s</span>
-                                <span>{scenario.movement}</span>
-                                <span>{scenario.scoring}</span>
-                            </div>
-                            {getSavedHighScore(scenario.id) > 0 && (
-                                <div className="scenario-highscore">
-                                    Best: {getSavedHighScore(scenario.id)}
-                                    {scenario.scoring === 'reaction' ? 'ms' : ''}
-                                </div>
-                            )}
+                            Leaderboards
+                        </button>
+                    </div>
+                </div>
+
+                {/* Category Tabs */}
+                <div className="category-tabs">
+                    {categories.map(cat => (
+                        <button
+                            key={cat.id}
+                            className={`category-tab ${activeCategory === cat.id ? 'active' : ''}`}
+                            onClick={() => setActiveCategory(cat.id)}
+                        >
+                            {cat.label}
                         </button>
                     ))}
                 </div>
+
+                {/* Scenario Carousel */}
+                <div className="scenario-carousel">
+                    <div className="scenario-grid">
+                        {filteredScenarios.map(scenario => (
+                            <button
+                                key={scenario.id}
+                                className="scenario-card"
+                                onClick={() => handleSelectScenario(scenario)}
+                            >
+                                <div className="scenario-category-badge">{scenario.category}</div>
+                                <h2>{scenario.name}</h2>
+                                <p>{scenario.description}</p>
+                                <div className="scenario-meta">
+                                    <span>{scenario.duration}s</span>
+                                    <span>{scenario.movement}</span>
+                                    <span>{scenario.scoring}</span>
+                                </div>
+                                {getSavedHighScore(scenario.id) > 0 && (
+                                    <div className="scenario-highscore">
+                                        Best: {getSavedHighScore(scenario.id)}
+                                        {scenario.scoring === 'reaction' ? 'ms' : ''}
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
                 {isAuthModalOpen && <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
-            </div>
+            </div >
         );
     }
 

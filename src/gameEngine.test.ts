@@ -148,7 +148,7 @@ describe('Game Engine Logic', () => {
             const scenario: Scenario = {
                 id: 'test', name: 'Test', description: '',
                 duration: 10, targetCount: 1, targetSize: 10,
-                movement: 'static', scoring: 'tps'
+                movement: 'static', scoring: 'tps', category: 'precision'
             };
             const state: any = { hits: 10, timeElapsed: 5000 };
             const score = calculateScore(state, scenario);
@@ -159,7 +159,7 @@ describe('Game Engine Logic', () => {
             const scenario: Scenario = {
                 id: 'test', name: 'Test', description: '',
                 duration: 10, targetCount: 1, targetSize: 10,
-                movement: 'static', scoring: 'accuracy'
+                movement: 'static', scoring: 'accuracy', category: 'precision'
             };
             const state: any = { hits: 5, shots: 10, timeElapsed: 1000 };
             const score = calculateScore(state, scenario);
@@ -170,7 +170,7 @@ describe('Game Engine Logic', () => {
             const scenario: Scenario = {
                 id: 'test', name: 'Test', description: '',
                 duration: 10, targetCount: 1, targetSize: 10,
-                movement: 'smooth', scoring: 'tracking'
+                movement: 'smooth', scoring: 'tracking', category: 'tracking'
             };
             const state: any = { trackingTime: 5000, trackingTotal: 10000 };
             const score = calculateScore(state, scenario);
@@ -181,7 +181,7 @@ describe('Game Engine Logic', () => {
             const scenario: Scenario = {
                 id: 'test', name: 'Test', description: '',
                 duration: 60, targetCount: 1, targetSize: 40,
-                movement: 'static', scoring: 'reaction'
+                movement: 'static', scoring: 'reaction', category: 'speed'
             };
             const state: any = { reactionTimes: [100, 150, 200, 250, 300] };
             const score = calculateScore(state, scenario);
@@ -192,7 +192,7 @@ describe('Game Engine Logic', () => {
             const scenario: Scenario = {
                 id: 'test', name: 'Test', description: '',
                 duration: 10, targetCount: 1, targetSize: 10,
-                movement: 'static', scoring: 'accuracy'
+                movement: 'static', scoring: 'accuracy', category: 'precision'
             };
             const state: any = { hits: 0, shots: 0, timeElapsed: 1000 };
             const score = calculateScore(state, scenario);

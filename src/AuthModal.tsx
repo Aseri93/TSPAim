@@ -67,6 +67,20 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                         {message.text}
                     </div>
                 )}
+
+                <div className="trust-section">
+                    <div className="trust-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <span>Secured by </span>
+                        <a href="https://supabase.com" target="_blank" rel="noopener noreferrer">Supabase</a>
+                    </div>
+                    <p className="privacy-note">
+                        Your email is only used for login. We never share or sell your data.
+                    </p>
+                </div>
             </div>
 
             <style>{`
@@ -179,6 +193,36 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     background: rgba(34, 197, 94, 0.1);
                     color: #22c55e;
                     border: 1px solid rgba(34, 197, 94, 0.2);
+                }
+                .trust-section {
+                    margin-top: 24px;
+                    padding-top: 20px;
+                    border-top: 1px solid rgba(255, 255, 255, 0.08);
+                    text-align: center;
+                }
+                .trust-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 12px;
+                    color: rgba(255, 255, 255, 0.5);
+                }
+                .trust-badge svg {
+                    color: #22c55e;
+                }
+                .trust-badge a {
+                    color: #22c55e;
+                    text-decoration: none;
+                    font-weight: 500;
+                }
+                .trust-badge a:hover {
+                    text-decoration: underline;
+                }
+                .privacy-note {
+                    font-size: 11px;
+                    color: rgba(255, 255, 255, 0.35);
+                    margin-top: 8px;
+                    line-height: 1.4;
                 }
                 @keyframes fadeIn {
                     from { opacity: 0; }
