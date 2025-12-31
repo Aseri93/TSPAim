@@ -272,78 +272,53 @@ export default function App() {
                     <p className="subtitle">Optimal Path Training</p>
                 </header>
 
-                <div className="fps-selector" style={{ marginTop: 20 }}>
-                    <label style={{ fontSize: 12, marginRight: 10, color: 'rgba(255,255,255,0.5)' }}>MAX FPS</label>
-                    <select
-                        value={fpsLimit}
-                        onChange={(e) => setFpsLimit(Number(e.currentTarget.value))}
-                    >
-                        <option value={0}>Unlimited</option>
-                        <option value={60}>60 FPS</option>
-                        <option value={120}>120 FPS</option>
-                        <option value={144}>144 FPS</option>
-                        <option value={165}>165 FPS</option>
-                        <option value={200}>200 FPS</option>
-                        <option value={240}>240 FPS</option>
-                        <option value={360}>360 FPS</option>
-                    </select>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 8 }}>
-                        Tip: For the best experience, we recommend not using fullscreen yet. ily :)
-                    </p>
+                {/* Settings Controls */}
+                <div className="settings-bar">
+                    <div className="setting-item">
+                        <label>MAX FPS</label>
+                        <select
+                            value={fpsLimit}
+                            onChange={(e) => setFpsLimit(Number(e.currentTarget.value))}
+                        >
+                            <option value={0}>Unlimited</option>
+                            <option value={60}>60</option>
+                            <option value={120}>120</option>
+                            <option value={144}>144</option>
+                            <option value={165}>165</option>
+                            <option value={240}>240</option>
+                        </select>
+                    </div>
 
-                    <div style={{ marginTop: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                        <label style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>PLAYER NAME</label>
+                    <div className="setting-item">
+                        <label>PLAYER</label>
                         <input
                             type="text"
-                            placeholder="Enter nickname"
+                            placeholder="Nickname"
                             value={nickname}
                             onInput={(e) => {
                                 const val = e.currentTarget.value.slice(0, 15);
                                 setNickname(val);
                                 localStorage.setItem('tspaim_nickname', val);
                             }}
-                            style={{
-                                background: 'rgba(255,255,255,0.05)',
-                                border: '1px solid var(--border)',
-                                color: '#fff',
-                                width: 140,
-                                padding: '4px 8px',
-                                borderRadius: 4,
-                                fontSize: 13,
-                                outline: 'none',
-                                textAlign: 'center'
-                            }}
                         />
                     </div>
 
-                    <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                        <label style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>MOUSE DPI</label>
+                    <div className="setting-item">
+                        <label>DPI</label>
                         <input
                             type="number"
                             value={mouseDpi}
                             onInput={(e) => setMouseDpi(parseInt(e.currentTarget.value) || 0)}
-                            style={{
-                                background: 'rgba(255,255,255,0.05)',
-                                border: '1px solid var(--border)',
-                                color: '#fff',
-                                width: 80,
-                                padding: '4px 8px',
-                                borderRadius: 4,
-                                fontSize: 13,
-                                outline: 'none'
-                            }}
+                            style={{ width: 70 }}
                         />
                     </div>
 
-                    <div style={{ marginTop: 20 }}>
-                        <button
-                            className="btn-secondary"
-                            style={{ padding: '8px 16px', fontSize: 13 }}
-                            onClick={() => setPhase('leaderboard')}
-                        >
-                            Leaderboards
-                        </button>
-                    </div>
+                    <button
+                        className="btn-secondary"
+                        onClick={() => setPhase('leaderboard')}
+                    >
+                        Leaderboards
+                    </button>
                 </div>
 
                 {/* Category Tabs */}
@@ -359,32 +334,30 @@ export default function App() {
                     ))}
                 </div>
 
-                {/* Scenario Carousel */}
-                <div className="scenario-carousel">
-                    <div className="scenario-grid">
-                        {filteredScenarios.map(scenario => (
-                            <button
-                                key={scenario.id}
-                                className="scenario-card"
-                                onClick={() => handleSelectScenario(scenario)}
-                            >
-                                <div className="scenario-category-badge">{scenario.category}</div>
-                                <h2>{scenario.name}</h2>
-                                <p>{scenario.description}</p>
-                                <div className="scenario-meta">
-                                    <span>{scenario.duration}s</span>
-                                    <span>{scenario.movement}</span>
-                                    <span>{scenario.scoring}</span>
+                {/* Scenario Grid */}
+                <div className="scenario-grid">
+                    {filteredScenarios.map(scenario => (
+                        <button
+                            key={scenario.id}
+                            className="scenario-card"
+                            onClick={() => handleSelectScenario(scenario)}
+                        >
+                            <div className="scenario-category-badge">{scenario.category}</div>
+                            <h2>{scenario.name}</h2>
+                            <p>{scenario.description}</p>
+                            <div className="scenario-meta">
+                                <span>{scenario.duration}s</span>
+                                <span>{scenario.movement}</span>
+                                <span>{scenario.scoring}</span>
+                            </div>
+                            {getSavedHighScore(scenario.id) > 0 && (
+                                <div className="scenario-highscore">
+                                    Best: {getSavedHighScore(scenario.id)}
+                                    {scenario.scoring === 'reaction' ? 'ms' : ''}
                                 </div>
-                                {getSavedHighScore(scenario.id) > 0 && (
-                                    <div className="scenario-highscore">
-                                        Best: {getSavedHighScore(scenario.id)}
-                                        {scenario.scoring === 'reaction' ? 'ms' : ''}
-                                    </div>
-                                )}
-                            </button>
-                        ))}
-                    </div>
+                            )}
+                        </button>
+                    ))}
                 </div>
                 {isAuthModalOpen && <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
             </div >
