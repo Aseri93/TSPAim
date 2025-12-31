@@ -71,11 +71,16 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
     const initGame = useCallback(() => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
-        const width = 1920; // Virtual resolution
-        const height = 1080;
+        if (rect.height === 0) return;
+
+        const height = 1080; // Fixed vertical reference
+        const aspect = rect.width / rect.height;
+        const width = Math.round(height * aspect);
 
         const MIN_SCALE = 0.5;
-        const scale = Math.max(MIN_SCALE, Math.min(rect.width / width, rect.height / height));
+        // Scale based on height to maintain vertical FOV
+        const scale = Math.max(MIN_SCALE, rect.height / height);
+
         setViewScale(scale);
         viewScaleRef.current = scale;
 
@@ -88,6 +93,8 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             const dpr = Math.min(1.5, window.devicePixelRatio || 1);
             canvas.width = width * dpr;
             canvas.height = height * dpr;
+
+            // Apply styles manually for consistency, though absolute positioning handles layout
             canvas.style.width = '100%';
             canvas.style.height = '100%';
 
@@ -201,11 +208,35 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
         const resizeObserver = new ResizeObserver(() => {
             const rect = containerRef.current?.getBoundingClientRect();
-            if (rect) {
+            if (rect && rect.height > 0) {
+                const height = 1080;
+                const aspect = rect.width / rect.height;
+                const width = Math.round(height * aspect);
+
                 const MIN_SCALE = 0.5;
-                const scale = Math.max(MIN_SCALE, Math.min(rect.width / 1920, rect.height / 1080));
+                const scale = Math.max(MIN_SCALE, rect.height / height);
                 setViewScale(scale);
                 viewScaleRef.current = scale;
+
+                // Update game state dimensions dynamically
+                if (gameStateRef.current) {
+                    gameStateRef.current.width = width;
+                    // We don't update height as it's fixed 1080
+
+                    // Update canvas dimensions if they mismatch significantly?
+                    // Changing canvas.width clears it. This causes a flash.
+                    // But if we don't, the drawing might be stretched?
+                    // We rely on CSS scaling.
+                    // If width changed, we SHOULD update canvas resolution.
+                    const canvas = canvasRef.current;
+                    if (canvas && Math.abs(canvas.width - width * (window.devicePixelRatio || 1)) > 10) {
+                        const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+                        canvas.width = width * dpr;
+                        canvas.height = height * dpr;
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    }
+                }
             }
             if (gameStateRef.current && (scenario.movement === 'static' || scenario.scoring === 'tps')) {
                 gameStateRef.current.optimalPath = solveTSP(gameStateRef.current.targets, gameStateRef.current.cursorX, gameStateRef.current.cursorY);
@@ -471,7 +502,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             state.cursorX += e.movementX / viewScaleRef.current;
             state.cursorY += e.movementY / viewScaleRef.current;
             // Clamp to virtual bounds
-            state.cursorX = Math.max(0, Math.min(1920, state.cursorX));
+            state.cursorX = Math.max(0, Math.min(state.width, state.cursorX));
             state.cursorY = Math.max(0, Math.min(1080, state.cursorY));
         } else {
             // Map window coordinates to virtual space, accounting for centering offset
@@ -483,7 +514,8 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             const relativeX = e.clientX - rect.left;
             const relativeY = e.clientY - rect.top;
 
-            const offsetX = (rect.width - (1920 * viewScaleRef.current)) / 2;
+            const virtualW = state.width;
+            const offsetX = (rect.width - (virtualW * viewScaleRef.current)) / 2;
             const offsetY = (rect.height - (1080 * viewScaleRef.current)) / 2;
 
             state.cursorX = (relativeX - offsetX) / viewScaleRef.current;
@@ -519,7 +551,8 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         // CRITICAL: If not locked yet, we must map THIS click event to virtual space
         // This ensures the first click (to engage lock) can still hit a target.
         if (!document.pointerLockElement) {
-            const offsetX = (rect.width - (1920 * viewScaleRef.current)) / 2;
+            const virtualW = state.width;
+            const offsetX = (rect.width - (virtualW * viewScaleRef.current)) / 2;
             const offsetY = (rect.height - (1080 * viewScaleRef.current)) / 2;
 
             const relativeX = e.clientX - rect.left;
