@@ -470,9 +470,20 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             state.cursorX = Math.max(0, Math.min(1920, state.cursorX));
             state.cursorY = Math.max(0, Math.min(1080, state.cursorY));
         } else {
-            // Map window coordinates to virtual space
-            state.cursorX = (e.clientX - rect.left) / viewScaleRef.current;
-            state.cursorY = (e.clientY - rect.top) / viewScaleRef.current;
+            // Map window coordinates to virtual space, accounting for centering offset
+            // The virtual workspace is centered in the container.
+            // visual_x = (cursorX * viewScale) + offset_x
+            // offset_x = (rect.width - (1920 * viewScale)) / 2
+            // cursorX = (visual_x - offset_x) / viewScale
+
+            const relativeX = e.clientX - rect.left;
+            const relativeY = e.clientY - rect.top;
+
+            const offsetX = (rect.width - (1920 * viewScaleRef.current)) / 2;
+            const offsetY = (rect.height - (1080 * viewScaleRef.current)) / 2;
+
+            state.cursorX = (relativeX - offsetX) / viewScaleRef.current;
+            state.cursorY = (relativeY - offsetY) / viewScaleRef.current;
         }
 
         const now = performance.now();
@@ -504,8 +515,14 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         // CRITICAL: If not locked yet, we must map THIS click event to virtual space
         // This ensures the first click (to engage lock) can still hit a target.
         if (!document.pointerLockElement) {
-            state.cursorX = (e.clientX - rect.left) / viewScale;
-            state.cursorY = (e.clientY - rect.top) / viewScale;
+            const offsetX = (rect.width - (1920 * viewScaleRef.current)) / 2;
+            const offsetY = (rect.height - (1080 * viewScaleRef.current)) / 2;
+
+            const relativeX = e.clientX - rect.left;
+            const relativeY = e.clientY - rect.top;
+
+            state.cursorX = (relativeX - offsetX) / viewScaleRef.current;
+            state.cursorY = (relativeY - offsetY) / viewScaleRef.current;
         }
 
         const cursorX = state.cursorX;
