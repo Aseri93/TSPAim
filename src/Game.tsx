@@ -106,7 +106,11 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             }
         };
         const handlePlChange = () => {
-            // Optional: Handle pointer lock state changes if needed
+            // If pointer lock is lost but window still has focus, it's likely the user pressed ESC
+            // We treat this as an "Exit" intent for a quicker workflow
+            if (!document.pointerLockElement && document.hasFocus()) {
+                onExit();
+            }
         };
         document.addEventListener('fullscreenchange', handleFsChange);
         document.addEventListener('pointerlockchange', handlePlChange);
@@ -114,7 +118,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             document.removeEventListener('fullscreenchange', handleFsChange);
             document.removeEventListener('pointerlockchange', handlePlChange);
         };
-    }, []);
+    }, [onExit]);
 
     // AUTOMATIC STEALTH BOOST
     useEffect(() => {
@@ -570,11 +574,12 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
     const handleKeyDown = useCallback((e: KeyboardEvent) => {
         if (e.key === 'Escape') {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                onExit();
-            }
+            // Explicitly exit game state immediately
+            onExit();
+
+            // Clean up browser states if they haven't auto-exited
+            if (document.pointerLockElement) document.exitPointerLock();
+            if (document.fullscreenElement) document.exitFullscreen();
         }
     }, [onExit]);
 
