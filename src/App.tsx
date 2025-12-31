@@ -98,9 +98,18 @@ export default function App() {
                     handleSelectScenario(filteredScenarios[focusedIndex]);
                 }
             } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                // Prevent page scroll if we are just browsing grid? 
-                // Actually, maybe we want to allow scrolling if the grid wraps.
-                // For now, allow default behavior for Up/Down unless we implement grid nav.
+                e.preventDefault();
+                const grid = document.querySelector('.scenario-grid');
+                if (grid) {
+                    const style = window.getComputedStyle(grid);
+                    const columns = style.gridTemplateColumns.split(' ').length;
+
+                    if (e.key === 'ArrowDown') {
+                        setFocusedIndex(i => Math.min(i + columns, filteredScenarios.length - 1));
+                    } else {
+                        setFocusedIndex(i => Math.max(i - columns, 0));
+                    }
+                }
             }
         };
 
