@@ -6,14 +6,20 @@ interface AuthModalProps {
     onClose: () => void;
 }
 
+type AuthMode = 'magic' | 'password';
+type PasswordMode = 'signin' | 'signup';
+
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [authMode, setAuthMode] = useState<AuthMode>('magic');
+    const [passwordMode, setPasswordMode] = useState<PasswordMode>('signin');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
     if (!isOpen) return null;
 
-    const handleLogin = async (e: Event) => {
+    const handleSubmit = async (e: Event) => {
         e.preventDefault();
         setLoading(true);
         setMessage(null);
@@ -24,15 +30,35 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             return;
         }
 
-        const { error } = await supabase.auth.signInWithOtp({ email });
-
-        if (error) {
-            setMessage({ text: error.message, type: 'error' });
-        } else {
-            setMessage({ text: "Check your inbox! Click the link to log in.", type: 'success' });
-            setEmail('');
+        try {
+            if (authMode === 'magic') {
+                const { error } = await supabase.auth.signInWithOtp({ email });
+                if (error) throw error;
+                setMessage({ text: "Check your inbox! Click the link to log in.", type: 'success' });
+            } else {
+                if (passwordMode === 'signup') {
+                    const { error } = await supabase.auth.signUp({
+                        email,
+                        password,
+                    });
+                    if (error) throw error;
+                    setMessage({ text: "Account created! You can now sign in.", type: 'success' });
+                    setPasswordMode('signin'); // Switch to login after signup
+                } else {
+                    const { error } = await supabase.auth.signInWithPassword({
+                        email,
+                        password,
+                    });
+                    if (error) throw error;
+                    // Success! Modal should probably close or app handles state change
+                    onClose();
+                }
+            }
+        } catch (error: any) {
+            setMessage({ text: error.message || "Authentication failed", type: 'error' });
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
@@ -40,14 +66,32 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <button className="close-btn" onClick={onClose}>&times;</button>
 
-                <h2 className="modal-title">Welcome Back</h2>
+                <h2 className="modal-title">
+                    {authMode === 'magic' ? 'Magic Link' : (passwordMode === 'signin' ? 'Welcome Back' : 'Create Account')}
+                </h2>
+
+                <div className="auth-tabs">
+                    <button
+                        className={`auth-tab ${authMode === 'magic' ? 'active' : ''}`}
+                        onClick={() => { setAuthMode('magic'); setMessage(null); }}
+                    >
+                        Magic Link
+                    </button>
+                    <button
+                        className={`auth-tab ${authMode === 'password' ? 'active' : ''}`}
+                        onClick={() => { setAuthMode('password'); setMessage(null); }}
+                    >
+                        Password
+                    </button>
+                </div>
+
                 <p className="modal-subtitle">
-                    Enter your email to sign in or create an account.
-                    <br />
-                    <span style={{ fontSize: '0.9em', opacity: 0.8 }}>We'll email you a secure link. No password needed.</span>
+                    {authMode === 'magic'
+                        ? "We'll email you a secure link. No password needed."
+                        : (passwordMode === 'signin' ? "Enter your credentials to access your account." : "Sign up to track your progress and compete.")}
                 </p>
 
-                <form onSubmit={handleLogin} className="auth-form">
+                <form onSubmit={handleSubmit} className="auth-form">
                     <input
                         type="email"
                         placeholder="name@example.com"
@@ -57,10 +101,39 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                         required
                     />
 
+                    {authMode === 'password' && (
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.currentTarget.value)}
+                            className="auth-input"
+                            required
+                            minLength={6}
+                        />
+                    )}
+
                     <button type="submit" className="auth-submit-btn" disabled={loading}>
-                        {loading ? 'Sending...' : 'Email Me a Login Link'}
+                        {loading ? 'Processing...' : (
+                            authMode === 'magic' ? 'Email Me a Login Link' : (passwordMode === 'signup' ? 'Create Account' : 'Sign In')
+                        )}
                     </button>
                 </form>
+
+                {authMode === 'password' && (
+                    <div className="auth-switch">
+                        {passwordMode === 'signin' ? "Don't have an account? " : "Already have an account? "}
+                        <button
+                            className="text-link"
+                            onClick={() => {
+                                setPasswordMode(passwordMode === 'signin' ? 'signup' : 'signin');
+                                setMessage(null);
+                            }}
+                        >
+                            {passwordMode === 'signin' ? 'Sign Up' : 'Sign In'}
+                        </button>
+                    </div>
+                )}
 
                 {message && (
                     <div className={`auth-message ${message.type}`}>
@@ -69,22 +142,11 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 )}
 
                 <div className="trust-section">
-                    <div className="trust-badge">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
-                        <span>Secured by </span>
-                        <a href="https://supabase.com" target="_blank" rel="noopener noreferrer">Supabase</a>
-                    </div>
                     <p className="privacy-note">
-                        Your email is only used for login. We never share or sell your data.
+                        Secured by Supabase. Your data is safe.
                     </p>
                 </div>
             </div>
-
         </div>
     );
 }
-
-
