@@ -69,6 +69,9 @@ export default function App() {
     // Auth State
     const [session, setSession] = useState<Session | null>(null);
     const [isAuthLoading, setIsAuthLoading] = useState(true);
+    const [showNicknameSetup, setShowNicknameSetup] = useState(false);
+    const [setupNickname, setSetupNickname] = useState('');
+    const [isSavingNickname, setIsSavingNickname] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('tspaim_fps_limit', fpsLimit.toString());
@@ -83,12 +86,20 @@ export default function App() {
             supabase.auth.getSession().then(({ data: { session } }) => {
                 setSession(session);
                 setIsAuthLoading(false);
+                // Check if user needs to set a nickname
+                if (session && !session.user.user_metadata?.nickname) {
+                    setShowNicknameSetup(true);
+                }
             });
 
             const {
                 data: { subscription },
             } = supabase.auth.onAuthStateChange((_event, session) => {
                 setSession(session);
+                // Check if user needs to set a nickname
+                if (session && !session.user.user_metadata?.nickname) {
+                    setShowNicknameSetup(true);
+                }
             });
 
             return () => subscription.unsubscribe();
@@ -107,6 +118,24 @@ export default function App() {
 
     const handleLogout = async () => {
         if (supabase) await supabase.auth.signOut();
+    };
+
+    const handleSaveNickname = async () => {
+        if (!supabase || !setupNickname.trim()) return;
+
+        setIsSavingNickname(true);
+        try {
+            await supabase.auth.updateUser({
+                data: { nickname: setupNickname.trim() }
+            });
+            // Also update local nickname
+            setNickname(setupNickname.trim());
+            localStorage.setItem('tspaim_nickname', setupNickname.trim());
+            setShowNicknameSetup(false);
+        } catch (error) {
+            console.error('Failed to save nickname:', error);
+        }
+        setIsSavingNickname(false);
     };
 
     const handleSelectScenario = (scenario: Scenario) => {
@@ -256,7 +285,7 @@ export default function App() {
                             <span className="auth-loading">Loading...</span>
                         ) : session ? (
                             <div className="auth-user">
-                                <span className="auth-username">{session.user.email?.split('@')[0]}</span>
+                                <span className="auth-username">{session.user.user_metadata?.nickname || session.user.email?.split('@')[0]}</span>
                                 <button onClick={handleLogout} className="auth-btn">Sign Out</button>
                             </div>
                         ) : (
@@ -360,6 +389,55 @@ export default function App() {
                     ))}
                 </div>
                 {isAuthModalOpen && <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
+
+                {/* Nickname Setup Modal */}
+                {showNicknameSetup && (
+                    <div className="modal-overlay" onClick={() => { }}>
+                        <div className="modal-content" onClick={e => e.stopPropagation()}>
+                            <h2 style={{ marginBottom: 8, fontSize: 24, fontWeight: 500 }}>Welcome!</h2>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: 24, fontSize: 14 }}>
+                                Choose a nickname for the global leaderboards
+                            </p>
+                            <input
+                                type="text"
+                                placeholder="Enter nickname"
+                                value={setupNickname}
+                                onInput={(e) => setSetupNickname(e.currentTarget.value.slice(0, 15))}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px 16px',
+                                    fontSize: 16,
+                                    background: 'rgba(255,255,255,0.05)',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: 8,
+                                    color: '#fff',
+                                    outline: 'none',
+                                    textAlign: 'center',
+                                    marginBottom: 16
+                                }}
+                                autoFocus
+                            />
+                            <button
+                                onClick={handleSaveNickname}
+                                disabled={!setupNickname.trim() || isSavingNickname}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px 24px',
+                                    fontSize: 14,
+                                    fontWeight: 600,
+                                    background: setupNickname.trim() ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' : 'rgba(255,255,255,0.1)',
+                                    border: 'none',
+                                    borderRadius: 8,
+                                    color: '#fff',
+                                    cursor: setupNickname.trim() ? 'pointer' : 'not-allowed',
+                                    transition: 'all 0.2s ease'
+                                }}
+                            >
+                                {isSavingNickname ? 'Saving...' : 'Continue'}
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div >
         );
     }
