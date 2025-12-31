@@ -86,9 +86,17 @@ export default function App() {
             supabase.auth.getSession().then(({ data: { session } }) => {
                 setSession(session);
                 setIsAuthLoading(false);
-                // Check if user needs to set a nickname
-                if (session && !session.user.user_metadata?.nickname) {
-                    setShowNicknameSetup(true);
+
+                if (session) {
+                    const savedNickname = session.user.user_metadata?.nickname;
+                    // Provide nickname if missing
+                    if (!savedNickname) {
+                        setShowNicknameSetup(true);
+                    } else if (savedNickname !== nickname) {
+                        // Sync remote nickname to local if different
+                        setNickname(savedNickname);
+                        localStorage.setItem('tspaim_nickname', savedNickname);
+                    }
                 }
             });
 
@@ -96,9 +104,16 @@ export default function App() {
                 data: { subscription },
             } = supabase.auth.onAuthStateChange((_event, session) => {
                 setSession(session);
-                // Check if user needs to set a nickname
-                if (session && !session.user.user_metadata?.nickname) {
-                    setShowNicknameSetup(true);
+
+                if (session) {
+                    const savedNickname = session.user.user_metadata?.nickname;
+                    if (!savedNickname) {
+                        setShowNicknameSetup(true);
+                    } else if (savedNickname !== nickname) {
+                        // Sync remote nickname to local
+                        setNickname(savedNickname);
+                        localStorage.setItem('tspaim_nickname', savedNickname);
+                    }
                 }
             });
 
