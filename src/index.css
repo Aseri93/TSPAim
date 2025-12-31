@@ -322,14 +322,18 @@ body {
   z-index: -1;
 }
 
-.scenario-card:hover {
+.scenario-card:hover,
+.scenario-card.focused {
   background: var(--glass-hover);
   border-color: rgba(99, 102, 241, 0.3);
   transform: translateY(-4px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px var(--accent-glow);
+  outline: none;
+  /* Remove default browser outline */
 }
 
-.scenario-card:hover::before {
+.scenario-card:hover::before,
+.scenario-card.focused::before {
   opacity: 0.05;
 }
 

@@ -51,6 +51,13 @@ export default function App() {
     // Category filter for scenario navigation
     const [activeCategory, setActiveCategory] = useState<Scenario['category'] | 'all'>('all');
 
+    // Auth State
+    const [session, setSession] = useState<Session | null>(null);
+    const [isAuthLoading, setIsAuthLoading] = useState(true);
+    const [showNicknameSetup, setShowNicknameSetup] = useState(false);
+    const [setupNickname, setSetupNickname] = useState('');
+    const [isSavingNickname, setIsSavingNickname] = useState(false);
+
     // Category definitions for tabs
     const categories: { id: Scenario['category'] | 'all'; label: string }[] = [
         { id: 'all', label: 'All' },
@@ -66,12 +73,50 @@ export default function App() {
         ? scenarios
         : scenarios.filter(s => s.category === activeCategory);
 
-    // Auth State
-    const [session, setSession] = useState<Session | null>(null);
-    const [isAuthLoading, setIsAuthLoading] = useState(true);
-    const [showNicknameSetup, setShowNicknameSetup] = useState(false);
-    const [setupNickname, setSetupNickname] = useState('');
-    const [isSavingNickname, setIsSavingNickname] = useState(false);
+    // Keyboard Navigation State
+    const [focusedIndex, setFocusedIndex] = useState(0);
+
+    // Reset focus when category changes
+    useEffect(() => {
+        setFocusedIndex(0);
+    }, [activeCategory]);
+
+    // Keyboard Event Listener
+    useEffect(() => {
+        if (phase !== 'select' || showNicknameSetup) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                setFocusedIndex(i => Math.min(i + 1, filteredScenarios.length - 1));
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                setFocusedIndex(i => Math.max(i - 1, 0));
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (filteredScenarios[focusedIndex]) {
+                    handleSelectScenario(filteredScenarios[focusedIndex]);
+                }
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                // Prevent page scroll if we are just browsing grid? 
+                // Actually, maybe we want to allow scrolling if the grid wraps.
+                // For now, allow default behavior for Up/Down unless we implement grid nav.
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [phase, showNicknameSetup, filteredScenarios, focusedIndex]);
+
+    // Scroll focused card into view and update rendering
+    useEffect(() => {
+        const card = document.getElementById(`scenario-card-${focusedIndex}`);
+        if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+    }, [focusedIndex]);
+
+
 
     useEffect(() => {
         localStorage.setItem('tspaim_fps_limit', fpsLimit.toString());
@@ -380,11 +425,15 @@ export default function App() {
 
                 {/* Scenario Grid */}
                 <div className="scenario-grid">
-                    {filteredScenarios.map(scenario => (
+                    {filteredScenarios.map((scenario, index) => (
                         <button
                             key={scenario.id}
-                            className="scenario-card"
-                            onClick={() => handleSelectScenario(scenario)}
+                            id={`scenario-card-${index}`}
+                            className={`scenario-card ${index === focusedIndex ? 'focused' : ''}`}
+                            onClick={() => {
+                                setFocusedIndex(index);
+                                handleSelectScenario(scenario);
+                            }}
                         >
                             <div className="scenario-category-badge">{scenario.category}</div>
                             <h2>{scenario.name}</h2>
