@@ -74,7 +74,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         const width = 1920; // Virtual resolution
         const height = 1080;
 
-        const MIN_SCALE = 0.6;
+        const MIN_SCALE = 0.5;
         const scale = Math.max(MIN_SCALE, Math.min(rect.width / width, rect.height / height));
         setViewScale(scale);
         viewScaleRef.current = scale;
@@ -202,7 +202,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         const resizeObserver = new ResizeObserver(() => {
             const rect = containerRef.current?.getBoundingClientRect();
             if (rect) {
-                const MIN_SCALE = 0.6;
+                const MIN_SCALE = 0.5;
                 const scale = Math.max(MIN_SCALE, Math.min(rect.width / 1920, rect.height / 1080));
                 setViewScale(scale);
                 viewScaleRef.current = scale;
