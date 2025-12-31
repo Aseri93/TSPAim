@@ -240,7 +240,6 @@ export default function App() {
                         </div>
 
                         {isSupabaseConfigured && (
-                            /* Arcade Mode: Auth hidden for now
                             <div className="auth-section" style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}>
                                 {isAuthLoading ? (
                                     <span>Loading...</span>
@@ -250,13 +249,11 @@ export default function App() {
                                         <button onClick={handleLogout} className="btn-small">Logout</button>
                                     </div>
                                 ) : (
-                                    <button onClick={handleLogin} className="btn-small">
+                                    <button type="button" onClick={handleLogin} className="btn-small">
                                         Login / Sign Up
                                     </button>
                                 )}
                             </div>
-                            */
-                            null
                         )}
                     </div>
 
