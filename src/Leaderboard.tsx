@@ -63,7 +63,10 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
                 created_at,
                 user_id,
                 nickname,
-                profiles (username, avatar_url)
+                mouse_dpi,
+                viewport_w,
+                viewport_h,
+                view_scale
             `)
             .eq('scenario_id', scenarioId)
             .order('score', { ascending: scenarioId.includes('reaction') })
@@ -159,7 +162,7 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
                                     <td className="rank-cell">#{index + 1}</td>
                                     <td className="player-cell">
                                         <div className="player-name">
-                                            {entry.profiles?.username || entry.nickname || 'Anonymous'}
+                                            {entry.nickname || 'Anonymous'}
                                         </div>
                                     </td>
                                     <td className="meta-cell">{entry.mouse_dpi || '-'}</td>
