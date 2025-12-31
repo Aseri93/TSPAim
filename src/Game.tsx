@@ -187,7 +187,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
         const ctx = canvas.getContext('2d', {
             alpha: true,
-            desynchronized: true,
+            // desynchronized: true, // Disabled to prevent potential visual desync with DOM
             willReadFrequently: false,
             // @ts-ignore
             powerPreference: 'high-performance'
@@ -611,8 +611,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             >
                 <canvas
                     ref={canvasRef}
-                    width={1920}
-                    height={1080}
+                    // Width/Height managed manually by initGame for DPR support
                     style={{
                         width: '100%',
                         height: '100%',
