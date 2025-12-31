@@ -88,6 +88,11 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         gameStateRef.current = state;
         setTargets([...state.targets]);
 
+        if (contentRef.current) {
+            contentRef.current.style.width = `${width}px`;
+            contentRef.current.style.height = `${height}px`;
+        }
+
         const canvas = canvasRef.current;
         if (canvas) {
             const dpr = Math.min(1.5, window.devicePixelRatio || 1);
@@ -218,20 +223,23 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                 setViewScale(scale);
                 viewScaleRef.current = scale;
 
+                if (contentRef.current) {
+                    contentRef.current.style.width = `${width}px`;
+                    contentRef.current.style.height = `${height}px`;
+                }
+
                 // Update game state dimensions dynamically
                 if (gameStateRef.current) {
                     gameStateRef.current.width = width;
                     // We don't update height as it's fixed 1080
 
-                    // Update canvas dimensions if they mismatch significantly?
-                    // Changing canvas.width clears it. This causes a flash.
-                    // But if we don't, the drawing might be stretched?
-                    // We rely on CSS scaling.
-                    // If width changed, we SHOULD update canvas resolution.
+                    // Strict Sync: Update canvas if resolution mismatches at all
                     const canvas = canvasRef.current;
-                    if (canvas && Math.abs(canvas.width - width * (window.devicePixelRatio || 1)) > 10) {
-                        const dpr = Math.min(1.5, window.devicePixelRatio || 1);
-                        canvas.width = width * dpr;
+                    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+                    const targetW = Math.round(width * dpr);
+
+                    if (canvas && Math.abs(canvas.width - targetW) > 1) {
+                        canvas.width = targetW;
                         canvas.height = height * dpr;
                         const ctx = canvas.getContext('2d');
                         if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
