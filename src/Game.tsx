@@ -617,11 +617,14 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                         width: '100%',
                         height: '100%',
                         cursor: isPlaying ? 'none' : 'default',
-                        pointerEvents: 'none'
+                        pointerEvents: 'none',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0
                     }}
                 />
                 {isPlaying && (
-                    <div className="targets-layer">
+                    <div className="targets-layer" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
                         {targets.filter(t => !t.hit).map((target) => {
                             const pathIndex = gameStateRef.current?.optimalPath.findIndex(pt => pt.id === target.id) ?? -1;
                             const isFirst = pathIndex === 0;
@@ -670,7 +673,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                     </div>
                 )}
                 {isPlaying && (
-                    <div className="crosshair-layer">
+                    <div className="crosshair-layer" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
                         <div ref={crosshairRef} className="custom-crosshair" />
                     </div>
                 )}
