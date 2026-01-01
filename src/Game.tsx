@@ -301,7 +301,8 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         };
 
         // Start the appropriate render loop based on FPS setting
-        if (fpsIntervalRef.current > 0) {
+        // Use fpsLimit directly (not ref) to avoid stale value issues
+        if (fpsLimit > 0) {
             // Capped: use VSync-aligned requestAnimationFrame
             requestAnimationFrame(cappedRenderLoop);
         } else {
