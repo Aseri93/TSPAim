@@ -105,7 +105,7 @@ export const scenarios: Scenario[] = [
     id: 'compass-rose',
     name: 'Compass Rose',
     description: 'Hit all 8 directions from center. Tests your mousepad coverage and edge-to-edge precision.',
-    duration: 60,
+    duration: 30,
     targetCount: 9,
     targetSize: 30,
     movement: 'static',

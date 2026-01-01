@@ -523,26 +523,8 @@ export function renderGame(
     // This allows the browser to optimize the targets as individual layers.
 
     // Draw crosshair (only in non-tracking mode when playing)
-    if (state.phase === 'playing' && scenario.scoring !== 'tracking') {
-        const size = 10;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.lineWidth = 1;
+    // REMOVED: Canvas crosshair caused double-cursor issue. Relying on DOM .custom-crosshair in Game.tsx
 
-        ctx.beginPath();
-        ctx.moveTo(cursorX - size, cursorY);
-        ctx.lineTo(cursorX + size, cursorY);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(cursorX, cursorY - size);
-        ctx.lineTo(cursorX, cursorY + size);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(cursorX, cursorY, 2, 0, Math.PI * 2);
-        ctx.fillStyle = '#fff';
-        ctx.fill();
-    }
 
     // Tracking cursor (circle that shows if you're on target)
     if (scenario.scoring === 'tracking' && state.phase === 'playing') {

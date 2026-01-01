@@ -1272,3 +1272,18 @@ body {
   color: #fff;
   border-color: rgba(255, 255, 255, 0.2);
 }
+
+/* Custom Game Cursor */
+.custom-crosshair {
+  width: 4px;
+  height: 4px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+}
