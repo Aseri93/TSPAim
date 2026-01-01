@@ -230,6 +230,20 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
                 // Update game state dimensions dynamically
                 if (gameStateRef.current) {
+                    const oldWidth = gameStateRef.current.width;
+
+                    // Rescale target positions if width changed (maintain relative position)
+                    if (oldWidth !== width && oldWidth > 0 && gameStateRef.current.targets.length > 0) {
+                        const scaleX = width / oldWidth;
+                        gameStateRef.current.targets.forEach(t => {
+                            t.x = t.x * scaleX;
+                        });
+                        // Sync React state for initial layout (though DOM updates handle movement)
+                        // setTargets([...gameStateRef.current.targets]); 
+                        // Note: Calling setTargets here causes re-renders during resize which is laggy.
+                        // Since we have direct DOM manipulation in the loop, we trust the loop to update positions.
+                    }
+
                     gameStateRef.current.width = width;
                     // We don't update height as it's fixed 1080
 
