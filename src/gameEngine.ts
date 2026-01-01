@@ -107,17 +107,17 @@ export function createGameState(
     if (scenario.scoring !== 'reaction') {
         if (scenario.pattern === 'compass') {
             // Guided circular pattern: Center -> North -> NE -> East -> SE -> South -> SW -> West -> NW
-            // Adjusted Y to avoid HUD (occupied roughly top 100px of 1080p space)
+            // Margins: 12% from X edges, 15%/85% for Y to avoid HUD and bottom browser chrome
             const positions = [
-                { x: 0.5, y: 0.525, label: 'CENTER' },
-                { x: 0.5, y: 0.12, label: '1' }, // TOP
-                { x: 0.92, y: 0.12, label: '2' }, // NE
-                { x: 0.92, y: 0.525, label: '3' }, // RIGHT
-                { x: 0.92, y: 0.93, label: '4' },  // SE
-                { x: 0.5, y: 0.93, label: '5' },  // BOTTOM
-                { x: 0.08, y: 0.93, label: '6' },  // SW
-                { x: 0.08, y: 0.525, label: '7' }, // LEFT
-                { x: 0.08, y: 0.12, label: '8' }, // NW
+                { x: 0.5, y: 0.5, label: 'CENTER' },
+                { x: 0.5, y: 0.15, label: '1' }, // TOP
+                { x: 0.88, y: 0.15, label: '2' }, // NE
+                { x: 0.88, y: 0.5, label: '3' }, // RIGHT
+                { x: 0.88, y: 0.85, label: '4' },  // SE
+                { x: 0.5, y: 0.85, label: '5' },  // BOTTOM
+                { x: 0.12, y: 0.85, label: '6' },  // SW
+                { x: 0.12, y: 0.5, label: '7' }, // LEFT
+                { x: 0.12, y: 0.15, label: '8' }, // NW
             ];
             positions.forEach((p, i) => {
                 targets.push({
