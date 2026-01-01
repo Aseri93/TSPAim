@@ -61,18 +61,7 @@ export const scenarios: Scenario[] = [
     category: 'tracking',
   },
 
-  {
-    id: 'reaction',
-    name: 'Reaction Test',
-    description: 'Best of 5. Target appears, click anywhere to react. Random delays.',
-    duration: 60,
-    targetCount: 1,
-    targetSize: 40,
-    movement: 'static',
-    scoring: 'reaction',
-    clickLimit: 5,
-    category: 'speed',
-  },
+
   {
     id: 'visual-reaction',
     name: 'Visual Reaction',
