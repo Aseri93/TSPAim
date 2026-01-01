@@ -189,6 +189,20 @@ body {
   letter-spacing: -0.01em;
 }
 
+.home-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.home-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .nav-actions {
   display: flex;
   align-items: center;

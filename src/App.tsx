@@ -381,7 +381,7 @@ Play: https://tsp-aim.vercel.app`.trim();
                 {/* Modern Navbar */}
                 <nav className="navbar">
                     <div className="nav-brand">
-                        <span className="nav-logo">TSPAim</span>
+                        <button className="nav-logo home-btn" onClick={() => setPhase('select')}>🏠 TSPAim</button>
                     </div>
 
                     <div className="nav-actions">
