@@ -198,8 +198,8 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d', {
-            alpha: true,
-            // desynchronized: true, // Disabled to prevent potential visual desync with DOM
+            alpha: false, // Opaque canvas is faster
+            desynchronized: true, // Low-latency mode - bypasses compositor
             willReadFrequently: false,
             // @ts-ignore
             powerPreference: 'high-performance'
