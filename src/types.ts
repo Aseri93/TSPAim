@@ -63,6 +63,12 @@ export interface GameState {
     // Adaptive tracking
     adaptiveSpeed: number; // Current speed multiplier (1.0 = base)
     adaptiveScore: number; // Accumulated score based on speed
+    // Compass Rose state
+    compassIndex?: number; // Current target index in sequence (0-8)
+    compassLap?: number; // Current lap number (1, 2, 3...)
+    compassClockwise?: boolean; // true = clockwise, false = counter-clockwise
+    lapTimes?: number[]; // Time for each completed lap
+    lapStartTime?: number; // When current lap started
 }
 
 export interface GameResults {

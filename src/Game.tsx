@@ -587,6 +587,67 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             : checkHit(cursorX, cursorY, state.targets, scenario);
 
         if (hitTarget) {
+            // Compass Rose: Enforce sequence
+            if (scenario.id === 'compass-rose' && state.compassIndex !== undefined) {
+                const expectedIndex = state.compassIndex;
+                const hitIndex = state.targets.findIndex(t => t.id === hitTarget.id);
+
+                // Build the expected sequence based on direction
+                // Sequence: CENTER(0), then 1-8 clockwise or 8-1 counter-clockwise
+                let expectedTargetIndex: number;
+                if (expectedIndex === 0) {
+                    expectedTargetIndex = 0; // CENTER
+                } else if (state.compassClockwise) {
+                    expectedTargetIndex = expectedIndex; // 1, 2, 3, 4, 5, 6, 7, 8
+                } else {
+                    expectedTargetIndex = 9 - expectedIndex; // 8, 7, 6, 5, 4, 3, 2, 1
+                }
+
+                if (hitIndex !== expectedTargetIndex) {
+                    // Wrong target - don't count as hit
+                    state.shots--; // Undo shot count for wrong target
+                    return;
+                }
+
+                // Correct hit!
+                state.hits++;
+                state.score += 100;
+
+                // Start lap timer when hitting CENTER
+                if (expectedIndex === 0) {
+                    state.lapStartTime = performance.now();
+                }
+
+                // Advance sequence
+                state.compassIndex++;
+
+                // Check if lap complete (hit all 9 targets: CENTER + 1-8)
+                if (state.compassIndex > 8) {
+                    // Record lap time
+                    if (state.lapTimes && state.lapStartTime) {
+                        const lapTime = (performance.now() - state.lapStartTime) / 1000;
+                        state.lapTimes.push(lapTime);
+                    }
+
+                    // Start new lap
+                    state.compassIndex = 0; // Back to CENTER
+                    state.compassLap = (state.compassLap || 1) + 1;
+                    state.compassClockwise = !state.compassClockwise; // Alternate direction
+
+                    const direction = state.compassClockwise ? '→ CW' : '← CCW';
+                    state.message = `Lap ${state.compassLap} ${direction}`;
+                } else {
+                    // Update message with next target
+                    const nextLabel = state.compassIndex === 0 ? 'CENTER' :
+                        (state.compassClockwise ? state.compassIndex : 9 - state.compassIndex);
+                    state.message = `Hit ${nextLabel}`;
+                }
+
+                setTargets([...state.targets]);
+                return;
+            }
+
+            // Normal hit handling for other scenarios
             state.hits++;
             state.score += 100;
             if (scenario.scoring === 'reaction') {
@@ -666,8 +727,28 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                 {isPlaying && (
                     <div className="targets-layer" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
                         {targets.filter(t => !t.hit).map((target) => {
-                            const pathIndex = gameStateRef.current?.optimalPath.findIndex(pt => pt.id === target.id) ?? -1;
-                            const isFirst = pathIndex === 0;
+                            const state = gameStateRef.current;
+                            const pathIndex = state?.optimalPath.findIndex(pt => pt.id === target.id) ?? -1;
+
+                            // Compass Rose: Determine if this target is the active one
+                            let isActiveCompass = false;
+                            if (scenario.id === 'compass-rose' && state?.compassIndex !== undefined) {
+                                const expectedIndex = state.compassIndex;
+                                let expectedTargetIndex: number;
+                                if (expectedIndex === 0) {
+                                    expectedTargetIndex = 0; // CENTER
+                                } else if (state.compassClockwise) {
+                                    expectedTargetIndex = expectedIndex;
+                                } else {
+                                    expectedTargetIndex = 9 - expectedIndex;
+                                }
+                                const actualIdx = state.targets.findIndex(t => t.id === target.id);
+                                isActiveCompass = actualIdx === expectedTargetIndex;
+                            }
+
+                            const isFirst = scenario.id === 'compass-rose' ? isActiveCompass : pathIndex === 0;
+                            const isDimmed = scenario.id === 'compass-rose' && !isActiveCompass;
+
                             return (
                                 <div
                                     key={target.id}
@@ -683,22 +764,23 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                                     style={{
                                         width: target.size,
                                         height: target.size,
-                                        backgroundColor: isFirst ? 'rgba(34, 197, 94, 0.15)' : 'rgba(255, 255, 255, 0.1)',
-                                        border: `2px solid ${isFirst ? 'rgba(34, 197, 94, 0.8)' : 'rgba(255, 255, 255, 0.4)'}`,
+                                        backgroundColor: isFirst ? 'rgba(34, 197, 94, 0.2)' : (isDimmed ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.1)'),
+                                        border: `2px solid ${isFirst ? 'rgba(34, 197, 94, 0.9)' : (isDimmed ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.4)')}`,
                                         zIndex: isFirst ? 100 : 10,
+                                        opacity: isDimmed ? 0.5 : 1,
                                         '--tx': `${target.x}px`,
                                         '--ty': `${target.y}px`,
                                         transform: `translate3d(${target.x}px, ${target.y}px, 0) translate(-50%, -50%)`,
                                     } as any}
                                 >
-                                    {isPlaying && (target.label || (gameStateRef.current?.showPath && pathIndex >= 0)) && (() => {
+                                    {isPlaying && (target.label || (state?.showPath && pathIndex >= 0)) && (() => {
                                         const labelText = target.label || String(pathIndex + 1);
                                         const isLongNumber = labelText.length >= 3;
                                         const baseFontSize = target.size * (target.label === 'CENTER' ? 0.25 : 0.4);
                                         const fontSize = isLongNumber ? Math.max(8, baseFontSize * 0.65) : Math.max(10, baseFontSize);
                                         return (
                                             <span style={{
-                                                color: isFirst ? 'rgba(34, 197, 94, 1)' : 'rgba(255, 255, 255, 0.8)',
+                                                color: isFirst ? 'rgba(34, 197, 94, 1)' : (isDimmed ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.8)'),
                                                 fontSize,
                                                 fontWeight: 'bold',
                                                 pointerEvents: 'none'

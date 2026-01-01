@@ -142,6 +142,9 @@ export function createGameState(
     const cursorY = height / 2;
     const optimalPath = solveTSP(targets, cursorX, cursorY);
 
+    // Compass Rose initialization
+    const isCompass = scenario.id === 'compass-rose';
+
     return {
         phase: 'idle',
         targets,
@@ -158,16 +161,22 @@ export function createGameState(
         nextSpawnTime: scenario.scoring === 'reaction'
             ? performance.now() + (scenario.id === 'visual-reaction' ? 2000 + Math.random() * 3000 : 1000 + Math.random() * 2000)
             : 0,
-        message: scenario.id === 'visual-reaction' ? 'Wait...' : (scenario.id === 'compass-rose' ? 'Hit CENTER, then follow 1-8' : undefined),
+        message: scenario.id === 'visual-reaction' ? 'Wait...' : (isCompass ? 'Hit CENTER to start' : undefined),
         isRed: false,
         cursorX,
         cursorY,
         width,
         height,
-        showPath: (scenario.movement === 'static' || scenario.movement === 'strafe') && scenario.id !== 'compass-rose',
+        showPath: (scenario.movement === 'static' || scenario.movement === 'strafe') && !isCompass,
         replayLog: [],
         adaptiveSpeed: 1.0,
         adaptiveScore: 0,
+        // Compass Rose state
+        compassIndex: isCompass ? 0 : undefined, // Start at CENTER (index 0)
+        compassLap: isCompass ? 1 : undefined,
+        compassClockwise: isCompass ? true : undefined, // First lap is clockwise
+        lapTimes: isCompass ? [] : undefined,
+        lapStartTime: undefined,
     };
 }
 
