@@ -1,6 +1,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { scenarios } from './scenarios';
+import { createGameState } from './gameEngine';
 
 describe('Scenarios Configuration', () => {
     it('has valid scenarios', () => {
@@ -37,6 +38,74 @@ describe('Scenarios Configuration', () => {
         const removed = ['benchmark', 'linear-calibration', 'reaction'];
         scenarios.forEach(s => {
             expect(removed).not.toContain(s.id);
+        });
+    });
+});
+
+describe('Resolution-Independent Target Bounds', () => {
+    const resolutions = [
+        { name: '1080p (16:9)', width: 1920, height: 1080 },
+        { name: '1440p (16:9)', width: 2560, height: 1080 }, // Virtual 1080 fixed height
+        { name: 'Ultrawide (21:9)', width: 2520, height: 1080 },
+        { name: '4:3 Aspect', width: 1440, height: 1080 },
+        { name: 'Narrow (3:4)', width: 810, height: 1080 },
+    ];
+
+    resolutions.forEach(({ name, width, height }) => {
+        describe(`at ${name} (${width}x${height})`, () => {
+            scenarios.forEach(scenario => {
+                // Skip reaction scenarios (no targets)
+                if (scenario.scoring === 'reaction' && scenario.targetCount === 0) return;
+
+                it(`${scenario.name}: all targets within bounds`, () => {
+                    const state = createGameState(scenario, width, height);
+
+                    state.targets.forEach((target) => {
+                        const halfSize = target.size / 2;
+
+                        // Target center should be far enough from edges
+                        expect(target.x).toBeGreaterThanOrEqual(halfSize);
+                        expect(target.x).toBeLessThanOrEqual(width - halfSize);
+                        expect(target.y).toBeGreaterThanOrEqual(halfSize);
+                        expect(target.y).toBeLessThanOrEqual(height - halfSize);
+                    });
+                });
+            });
+        });
+    });
+
+    describe('Compass Rose specific', () => {
+        const compassScenario = scenarios.find(s => s.id === 'compass-rose');
+        if (!compassScenario) return;
+
+        it('stores relative positions on all targets', () => {
+            const state = createGameState(compassScenario, 1920, 1080);
+
+            state.targets.forEach(target => {
+                expect(target.relX).toBeDefined();
+                expect(target.relY).toBeDefined();
+                expect(target.relX).toBeGreaterThanOrEqual(0);
+                expect(target.relX).toBeLessThanOrEqual(1);
+                expect(target.relY).toBeGreaterThanOrEqual(0);
+                expect(target.relY).toBeLessThanOrEqual(1);
+            });
+        });
+
+        it('recalculates correctly for different widths', () => {
+            const widths = [1920, 2560, 1440, 810];
+
+            widths.forEach(width => {
+                const state = createGameState(compassScenario, width, 1080);
+
+                state.targets.forEach(target => {
+                    if (target.relX !== undefined) {
+                        expect(target.x).toBeCloseTo(target.relX * width, 1);
+                    }
+                    if (target.relY !== undefined) {
+                        expect(target.y).toBeCloseTo(target.relY * 1080, 1);
+                    }
+                });
+            });
         });
     });
 });

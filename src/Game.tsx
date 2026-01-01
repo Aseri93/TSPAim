@@ -206,10 +206,9 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         }) as CanvasRenderingContext2D;
         if (!ctx) return;
 
-        if (gameStateRef.current) {
-            gameStateRef.current.width = 1920;
-            gameStateRef.current.height = 1080;
-        }
+        // NOTE: Do NOT override gameStateRef dimensions here.
+        // initGame already sets correct dimensions based on container.
+        // Hardcoding 1920x1080 caused mismatch with actual aspect ratio.
 
         const resizeObserver = new ResizeObserver(() => {
             const rect = containerRef.current?.getBoundingClientRect();
