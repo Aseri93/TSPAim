@@ -69,6 +69,8 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
                 view_scale
             `)
             .eq('scenario_id', scenarioId)
+            .not('nickname', 'ilike', 'Pro_Player_%')
+            .not('nickname', 'ilike', 'Player_%')
             .order('score', { ascending: scenarioId.includes('reaction') })
             .limit(50);
 
