@@ -261,11 +261,13 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         const channel = new MessageChannel();
         const scheduleNext = () => { if (isLooping) channel.port2.postMessage(undefined); };
 
-        // RENDER CHANNEL - for truly unlimited FPS (bypasses VSync)
-        const renderChannel = new MessageChannel();
-        const scheduleRender = () => { if (isLooping) renderChannel.port2.postMessage(undefined); };
+        // RENDER LOOP SCHEDULING - use postMessage to window (less throttled than MessageChannel)
+        const RENDER_MSG = '__tspaim_render__';
+        const scheduleRender = () => {
+            if (isLooping) window.postMessage(RENDER_MSG, '*');
+        };
 
-        // RENDER FUNCTION - called by either rAF or MessageChannel
+        // RENDER FUNCTION - called by either rAF or postMessage
         const doRender = () => {
             const state = gameStateRef.current;
             if (state) {
@@ -293,12 +295,13 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             requestAnimationFrame(cappedRenderLoop);
         };
 
-        // UNLIMITED RENDER LOOP (MessageChannel - bypasses VSync)
-        renderChannel.port1.onmessage = () => {
-            if (!isLooping) return;
+        // UNLIMITED RENDER LOOP (postMessage - bypasses VSync)
+        const renderHandler = (e: MessageEvent) => {
+            if (e.data !== RENDER_MSG || !isLooping) return;
             doRender();
             scheduleRender();
         };
+        window.addEventListener('message', renderHandler);
 
         // Start the appropriate render loop based on FPS setting
         // Use fpsLimit directly (not ref) to avoid stale value issues
@@ -306,7 +309,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             // Capped: use VSync-aligned requestAnimationFrame
             requestAnimationFrame(cappedRenderLoop);
         } else {
-            // Unlimited: use high-frequency MessageChannel
+            // Unlimited: use high-frequency postMessage
             scheduleRender();
         }
 
@@ -471,6 +474,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         return () => {
             isLooping = false;
             resizeObserver.disconnect();
+            window.removeEventListener('message', renderHandler);
         };
     }, [isPlaying, scenario, onEnd, fpsLimit]);
 
