@@ -9,9 +9,10 @@ Free browser-based aim trainer with Kovaaks-style scenarios. No download require
 
 ## Features
 
-- **9 Training Scenarios** — Static, strafing, tracking, reaction
+- **8 Training Scenarios** — Static, strafing, tracking, calibration, frenzy
 - **Unlimited FPS** — Bypasses VSync for maximum performance
 - **TSP Path Guidance** — Shows optimal target order
+- **Analytics Dashboard** — Visualize Score vs DPI/Resolution
 - **Local & Global Leaderboards** — Track your progress
 - **Zero Input Lag** — Raw mouse input with pointer lock
 
@@ -24,11 +25,10 @@ Free browser-based aim trainer with Kovaaks-style scenarios. No download require
 | **Strafing Click** | Click | Targets move left/right |
 | **Smooth Track** | Tracking | Keep cursor on moving target |
 | **🔥 Adaptive Track** | Tracking | Speed increases with accuracy! |
-| **Reaction Test** | Reaction | Click when target appears |
 | **Visual Reaction** | Reaction | Click when screen turns red |
 | **Target Frenzy 100** | Frenzy | Clear 100 static targets |
 | **🌀 Strafing Frenzy 100** | Frenzy | Clear 100 moving targets |
-| **👑 Grubby RTS Calibration** | Calibration | Test your mousepad coverage |
+| **🧭 Compass Rose** | Calibration | Edge-to-edge precision test |
 
 ## Getting Started
 
@@ -56,7 +56,7 @@ Open [http://localhost:5173](http://localhost:5173)
 - Targets 1000+ FPS in Unlimited mode
 - Canvas-based rendering (no DOM thrashing)
 - MessageChannel game loop (bypasses setTimeout limits)
-- Tested on M2 MacBook Air at 1440p
+- Resolution-independent (1080p, 1440p, ultrawide support)
 
 ## Controls
 
@@ -64,6 +64,7 @@ Open [http://localhost:5173](http://localhost:5173)
 |-----|--------|
 | **Click** | Shoot target |
 | **ESC** | Exit to menu |
+| **🏠 Logo** | Return to home |
 
 ## Leaderboards
 
