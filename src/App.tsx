@@ -378,64 +378,78 @@ Play: https://tsp-aim.vercel.app`.trim();
     if (phase === 'select') {
         return (
             <div className="app">
-                {/* Fixed top-right controls (settings + auth) */}
-                <div className="top-right-controls">
-                    <button
-                        className="gear-btn"
-                        onClick={() => setShowSettingsModal(true)}
-                        title="Settings"
-                    >
-                        Settings
-                    </button>
-                    {isSupabaseConfigured && (
-                        <>
-                            {isAuthLoading ? (
-                                <span className="auth-loading">Loading...</span>
-                            ) : session ? (
-                                <div className="auth-user">
-                                    <span className="auth-username">{session.user.user_metadata?.nickname || session.user.email?.split('@')[0]}</span>
-                                    <button onClick={handleLogout} className="auth-btn">Sign Out</button>
-                                </div>
-                            ) : (
-                                <button type="button" onClick={handleLogin} className="auth-btn">
-                                    Sign In
-                                </button>
-                            )}
-                        </>
-                    )}
-                </div>
+                {/* Modern Navbar */}
+                <nav className="navbar">
+                    <div className="nav-brand">
+                        <span className="nav-logo">🎯 TSP Aim</span>
+                    </div>
 
-                <header className="header">
-                    <h1>TSP Aim Trainer</h1>
-                    <p className="subtitle">Optimal Path Training</p>
-                    <p className="tip">Tip: Maximize window instead of F11 for best performance</p>
+                    <div className="nav-actions">
+                        <div className="nav-stats">
+                            <span className="nav-stat-item">{fpsLimit === 0 ? '∞' : fpsLimit} FPS</span>
+                        </div>
+
+                        <div className="nav-divider"></div>
+
+                        <button
+                            className="nav-btn"
+                            onClick={() => setPhase('leaderboard')}
+                        >
+                            Leaderboards
+                        </button>
+
+                        <button
+                            className="nav-btn"
+                            onClick={() => setShowSettingsModal(true)}
+                        >
+                            Settings
+                        </button>
+
+                        <div className="nav-divider"></div>
+
+                        {/* Auth Section */}
+                        {isSupabaseConfigured && (
+                            <>
+                                {isAuthLoading ? (
+                                    <span className="auth-loading">...</span>
+                                ) : session ? (
+                                    <div className="auth-user">
+                                        <span className="auth-username">{session.user.user_metadata?.nickname || session.user.email?.split('@')[0]}</span>
+                                        <button onClick={handleLogout} className="auth-btn-small">Sign Out</button>
+                                    </div>
+                                ) : (
+                                    <button type="button" onClick={handleLogin} className="auth-btn-primary">
+                                        Sign In
+                                    </button>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </nav>
+
+                {/* Hero Section */}
+                <header className="hero">
+                    <h1 className="hero-title">Optimal Path</h1>
+                    <p className="hero-subtitle">Train your aim with TSP-optimized scenarios</p>
+                    <div className="hero-tip">
+                        <span className="tip-icon">💡</span>
+                        <span>Tip: Maximize window instead of F11 for best performance</span>
+                    </div>
                 </header>
 
-                {/* Quick Access Bar */}
-                <div className="settings-bar">
-                    <div className="quick-info">
-                        <span className="player-badge">{nickname || 'Guest'}</span>
-                        <span className="fps-badge">{fpsLimit === 0 ? '∞' : fpsLimit} FPS</span>
-                    </div>
-                    <button
-                        className="btn-secondary"
-                        onClick={() => setPhase('leaderboard')}
-                    >
-                        Leaderboards
-                    </button>
-                </div>
-
                 {/* Category Tabs */}
-                <div className="category-tabs">
-                    {categories.map(cat => (
-                        <button
-                            key={cat.id}
-                            className={`category-tab ${activeCategory === cat.id ? 'active' : ''}`}
-                            onClick={() => setActiveCategory(cat.id)}
-                        >
-                            {cat.label}
-                        </button>
-                    ))}
+                <div className="category-tabs-container">
+                    <div className="category-tabs">
+                        {categories.map(cat => (
+                            <button
+                                key={cat.id}
+                                className={`category-tab ${activeCategory === cat.id ? 'active' : ''}`}
+                                onClick={() => setActiveCategory(cat.id)}
+                            >
+                                {cat.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Scenario Grid */}
