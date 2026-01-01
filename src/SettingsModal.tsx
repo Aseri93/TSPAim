@@ -66,6 +66,7 @@ export default function SettingsModal({
                             <option value={120}>120</option>
                             <option value={144}>144</option>
                             <option value={165}>165</option>
+                            <option value={200}>200</option>
                             <option value={240}>240</option>
                             <option value={360}>360</option>
                         </select>
