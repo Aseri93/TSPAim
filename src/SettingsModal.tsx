@@ -24,10 +24,6 @@ export default function SettingsModal({
     const [localFps, setLocalFps] = useState(fpsLimit);
     const [localDpi, setLocalDpi] = useState(mouseDpi);
     const [localNickname, setLocalNickname] = useState(nickname);
-    const [sensitivity, setSensitivity] = useState(() => {
-        const saved = localStorage.getItem('tspaim_sensitivity');
-        return saved ? parseFloat(saved) : 1.0;
-    });
 
     // Sync local state when modal opens
     useEffect(() => {
@@ -40,15 +36,6 @@ export default function SettingsModal({
 
     if (!isOpen) return null;
 
-    // cm/360 calculation (approximate based on common game values)
-    const calculateCm360 = () => {
-        if (localDpi <= 0 || sensitivity <= 0) return '—';
-        // Using a common reference: 1.0 sens at 800 DPI ≈ 34.6 cm/360
-        const baseCm360 = 34.6;
-        const cm360 = (baseCm360 * 800 * 1.0) / (localDpi * sensitivity);
-        return cm360.toFixed(1);
-    };
-
     const handleSave = () => {
         setFpsLimit(localFps);
         setMouseDpi(localDpi);
@@ -56,7 +43,6 @@ export default function SettingsModal({
         localStorage.setItem('tspaim_fps_limit', String(localFps));
         localStorage.setItem('tspaim_mouse_dpi', String(localDpi));
         localStorage.setItem('tspaim_nickname', localNickname);
-        localStorage.setItem('tspaim_sensitivity', String(sensitivity));
         onClose();
     };
 
@@ -98,21 +84,9 @@ export default function SettingsModal({
                             max={32000}
                         />
                     </div>
-                    <div className="setting-row">
-                        <label>In-Game Sensitivity</label>
-                        <input
-                            type="number"
-                            value={sensitivity}
-                            onInput={(e) => setSensitivity(parseFloat(e.currentTarget.value) || 1)}
-                            step={0.1}
-                            min={0.1}
-                            max={10}
-                        />
-                    </div>
-                    <div className="setting-row cm360-display">
-                        <label>cm/360°</label>
-                        <span className="cm360-value">{calculateCm360()}</span>
-                    </div>
+                    <p className="setting-hint">
+                        Used for leaderboard analytics only
+                    </p>
                 </div>
 
                 <div className="settings-section">
