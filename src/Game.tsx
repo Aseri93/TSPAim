@@ -95,7 +95,9 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
         const canvas = canvasRef.current;
         if (canvas) {
-            const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+            // CRITICAL: Use DPR 1 for consistency with ResizeObserver
+            // Using different DPR causes coordinate mismatch between canvas and DOM targets
+            const dpr = 1;
             canvas.width = width * dpr;
             canvas.height = height * dpr;
 
