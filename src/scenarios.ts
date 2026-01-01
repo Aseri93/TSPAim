@@ -135,17 +135,6 @@ export const scenarios: Scenario[] = [
     pattern: 'compass',
     category: 'calibration',
   },
-  {
-    id: 'linear-calibration',
-    name: 'Sensitivity Calibration',
-    description: 'Measure your effective DPI (eDPI) by moving your mouse exactly 10cm horizontally.',
-    duration: -1,
-    targetCount: 0,
-    targetSize: 0,
-    movement: 'static',
-    scoring: 'accuracy', // Not used, special logic
-    category: 'calibration',
-  },
 ];
 
 export function getScenario(id: string): Scenario | undefined {

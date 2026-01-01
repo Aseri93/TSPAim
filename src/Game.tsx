@@ -516,10 +516,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             state.cursorX += e.movementX / viewScaleRef.current;
             state.cursorY += e.movementY / viewScaleRef.current;
 
-            // Calibration Logic
-            if (scenario.id === 'linear-calibration' && state.calibrationMeasuring) {
-                state.calibrationPixels = (state.calibrationPixels || 0) + Math.abs(e.movementX);
-            }
+
             // Clamp to virtual bounds
             state.cursorX = Math.max(0, Math.min(state.width, state.cursorX));
             state.cursorY = Math.max(0, Math.min(1080, state.cursorY));
@@ -565,15 +562,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
         if (scenario.scoring === 'tracking') return;
 
-        // Special: Linear Calibration Toggle
-        if (scenario.id === 'linear-calibration') {
-            const state = gameStateRef.current;
-            state.calibrationMeasuring = !state.calibrationMeasuring;
-            if (state.calibrationMeasuring) {
-                state.calibrationPixels = 0; // Reset
-            }
-            return;
-        }
+
 
         const rect = containerRef.current.getBoundingClientRect();
         const state = gameStateRef.current;
