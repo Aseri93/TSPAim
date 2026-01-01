@@ -51,7 +51,7 @@ export default function SettingsModal({
             <div className="modal-content settings-modal" onClick={e => e.stopPropagation()}>
                 <button className="close-btn" onClick={onClose}>&times;</button>
 
-                <h2 className="modal-title">⚙️ Settings</h2>
+                <h2 className="modal-title">Settings</h2>
 
                 <div className="settings-section">
                     <h3>Display</h3>

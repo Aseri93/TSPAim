@@ -385,7 +385,7 @@ Play: https://tsp-aim.vercel.app`.trim();
                         onClick={() => setShowSettingsModal(true)}
                         title="Settings"
                     >
-                        ⚙️
+                        Settings
                     </button>
                     {isSupabaseConfigured && (
                         <>
@@ -413,14 +413,14 @@ Play: https://tsp-aim.vercel.app`.trim();
                 {/* Quick Access Bar */}
                 <div className="settings-bar">
                     <div className="quick-info">
-                        <span className="player-badge">🎮 {nickname || 'Guest'}</span>
+                        <span className="player-badge">{nickname || 'Guest'}</span>
                         <span className="fps-badge">{fpsLimit === 0 ? '∞' : fpsLimit} FPS</span>
                     </div>
                     <button
                         className="btn-secondary"
                         onClick={() => setPhase('leaderboard')}
                     >
-                        🏆 Leaderboards
+                        Leaderboards
                     </button>
                 </div>
 
@@ -654,7 +654,7 @@ Play: https://tsp-aim.vercel.app`.trim();
                             className="btn btn-share"
                             onClick={handleShareScore}
                         >
-                            {shareStatus === 'copied' ? '✓ Copied!' : '📋 Share Score'}
+                            {shareStatus === 'copied' ? '✓ Copied!' : 'Share Score'}
                         </button>
                     </div>
                 </div>
