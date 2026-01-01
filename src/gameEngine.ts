@@ -434,10 +434,10 @@ export function renderGame(
     // Draw Calibration Guide Circle for Compass Rose
     if (scenario.id === 'compass-rose' && state.phase === 'playing') {
         ctx.beginPath();
-        // Ellipse that touches the edge targets
-        ctx.ellipse(width / 2, height * 0.525, width * 0.42, height * 0.405, 0, 0, Math.PI * 2);
+        // Wider ellipse for better edge-to-edge calibration
+        ctx.ellipse(width / 2, height / 2, width * 0.45, height * 0.43, 0, 0, Math.PI * 2);
         ctx.setLineDash([10, 10]);
-        ctx.strokeStyle = 'rgba(251, 191, 36, 0.15)'; // More visible
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.2)'; // More visible
         ctx.lineWidth = 2;
         ctx.stroke();
 

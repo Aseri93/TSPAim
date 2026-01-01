@@ -73,39 +73,5 @@ describe('Resolution-Independent Target Bounds', () => {
             });
         });
     });
-
-    describe('Compass Rose specific', () => {
-        const compassScenario = scenarios.find(s => s.id === 'compass-rose');
-        if (!compassScenario) return;
-
-        it('stores relative positions on all targets', () => {
-            const state = createGameState(compassScenario, 1920, 1080);
-
-            state.targets.forEach(target => {
-                expect(target.relX).toBeDefined();
-                expect(target.relY).toBeDefined();
-                expect(target.relX).toBeGreaterThanOrEqual(0);
-                expect(target.relX).toBeLessThanOrEqual(1);
-                expect(target.relY).toBeGreaterThanOrEqual(0);
-                expect(target.relY).toBeLessThanOrEqual(1);
-            });
-        });
-
-        it('recalculates correctly for different widths', () => {
-            const widths = [1920, 2560, 1440, 810];
-
-            widths.forEach(width => {
-                const state = createGameState(compassScenario, width, 1080);
-
-                state.targets.forEach(target => {
-                    if (target.relX !== undefined) {
-                        expect(target.x).toBeCloseTo(target.relX * width, 1);
-                    }
-                    if (target.relY !== undefined) {
-                        expect(target.y).toBeCloseTo(target.relY * 1080, 1);
-                    }
-                });
-            });
-        });
-    });
 });
+

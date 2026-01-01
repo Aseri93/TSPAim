@@ -104,13 +104,12 @@ export const scenarios: Scenario[] = [
   {
     id: 'compass-rose',
     name: 'Compass Rose',
-    description: 'Hit all 8 directions from center. Tests your mousepad coverage and edge-to-edge precision.',
+    description: 'Static targets with a calibration ring. Tests your mousepad coverage and edge-to-edge precision.',
     duration: 30,
-    targetCount: 9,
+    targetCount: 8,
     targetSize: 30,
     movement: 'static',
-    scoring: 'accuracy',
-    pattern: 'compass',
+    scoring: 'tps', // Use same scoring as Static Grid
     category: 'calibration',
   },
 ];
