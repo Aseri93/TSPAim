@@ -381,7 +381,7 @@ Play: https://tsp-aim.vercel.app`.trim();
                 {/* Modern Navbar */}
                 <nav className="navbar">
                     <div className="nav-brand">
-                        <span className="nav-logo">🎯 TSP Aim</span>
+                        <span className="nav-logo">TSPAim</span>
                     </div>
 
                     <div className="nav-actions">

@@ -143,9 +143,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  padding: 6px 16px;
+  background: rgba(245, 158, 11, 0.08);
   border-radius: 100px;
   color: var(--warning);
   font-size: 13px;
@@ -264,20 +263,25 @@ body {
 .category-tabs {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 8px;
   margin-bottom: 32px;
   flex-wrap: wrap;
-  max-width: 800px;
+  max-width: 900px;
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
 }
 
 .category-tab {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 100px;
+  padding: 8px 20px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
   color: var(--fg-muted);
   font-family: inherit;
   font-size: 13px;
@@ -287,16 +291,16 @@ body {
 }
 
 .category-tab:hover {
-  background: var(--glass-hover);
-  border-color: rgba(255, 255, 255, 0.15);
   color: var(--fg);
+  background: var(--glass-hover);
 }
 
 .category-tab.active {
-  background: var(--accent-gradient);
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 4px 15px var(--accent-glow);
+  background: var(--glass-bg);
+  /* Subtle highlight */
+  border-color: var(--glass-border);
+  color: var(--fg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .category-icon {
