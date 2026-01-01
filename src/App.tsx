@@ -6,6 +6,7 @@ import './index.css';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import AuthModal from './AuthModal';
+import SettingsModal from './SettingsModal';
 import { GameResults, Scenario } from './types';
 
 type AppPhase = 'select' | 'playing' | 'results' | 'leaderboard';
@@ -57,6 +58,9 @@ export default function App() {
     const [showNicknameSetup, setShowNicknameSetup] = useState(false);
     const [setupNickname, setSetupNickname] = useState('');
     const [isSavingNickname, setIsSavingNickname] = useState(false);
+
+    // Settings Modal State
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
 
     // Category definitions for tabs
     const categories: { id: Scenario['category'] | 'all'; label: string }[] = [
@@ -268,6 +272,33 @@ export default function App() {
         setPhase('select');
     };
 
+    const [shareStatus, setShareStatus] = useState<'idle' | 'copied'>('idle');
+
+    const handleShareScore = async () => {
+        if (!results || !selectedScenario) return;
+
+        const scoreText = `🎯 TSP Aim Trainer
+${selectedScenario.name}: ${results.primary} ${results.label}
+${results.secondary ? `${results.secondaryLabel}: ${results.secondary}` : ''}
+Play: https://tsp-aim.vercel.app`.trim();
+
+        try {
+            await navigator.clipboard.writeText(scoreText);
+            setShareStatus('copied');
+            setTimeout(() => setShareStatus('idle'), 2000);
+        } catch {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = scoreText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            setShareStatus('copied');
+            setTimeout(() => setShareStatus('idle'), 2000);
+        }
+    };
+
     const saveLocalScore = (res: GameResults, name: string = 'Guest') => {
         const key = 'tspaim_local_rankings';
         const raw = localStorage.getItem(key);
@@ -370,53 +401,27 @@ export default function App() {
                     <p className="subtitle">Optimal Path Training</p>
                 </header>
 
-                {/* Settings Controls */}
+                {/* Quick Access Bar */}
                 <div className="settings-bar">
-                    <div className="setting-item">
-                        <label>MAX FPS</label>
-                        <select
-                            value={fpsLimit}
-                            onChange={(e) => setFpsLimit(Number(e.currentTarget.value))}
+                    <div className="quick-info">
+                        <span className="player-badge">🎮 {nickname || 'Guest'}</span>
+                        <span className="fps-badge">{fpsLimit === 0 ? '∞' : fpsLimit} FPS</span>
+                    </div>
+                    <div className="quick-actions">
+                        <button
+                            className="gear-btn"
+                            onClick={() => setShowSettingsModal(true)}
+                            title="Settings"
                         >
-                            <option value={0}>Unlimited</option>
-                            <option value={60}>60</option>
-                            <option value={120}>120</option>
-                            <option value={144}>144</option>
-                            <option value={165}>165</option>
-                            <option value={240}>240</option>
-                        </select>
+                            ⚙️
+                        </button>
+                        <button
+                            className="btn-secondary"
+                            onClick={() => setPhase('leaderboard')}
+                        >
+                            Leaderboards
+                        </button>
                     </div>
-
-                    <div className="setting-item">
-                        <label>PLAYER</label>
-                        <input
-                            type="text"
-                            placeholder="Nickname"
-                            value={nickname}
-                            onInput={(e) => {
-                                const val = e.currentTarget.value.slice(0, 15);
-                                setNickname(val);
-                                localStorage.setItem('tspaim_nickname', val);
-                            }}
-                        />
-                    </div>
-
-                    <div className="setting-item">
-                        <label>DPI</label>
-                        <input
-                            type="number"
-                            value={mouseDpi}
-                            onInput={(e) => setMouseDpi(parseInt(e.currentTarget.value) || 0)}
-                            style={{ width: 70 }}
-                        />
-                    </div>
-
-                    <button
-                        className="btn-secondary"
-                        onClick={() => setPhase('leaderboard')}
-                    >
-                        Leaderboards
-                    </button>
                 </div>
 
                 {/* Category Tabs */}
@@ -462,6 +467,17 @@ export default function App() {
                     ))}
                 </div>
                 {isAuthModalOpen && <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
+
+                <SettingsModal
+                    isOpen={showSettingsModal}
+                    onClose={() => setShowSettingsModal(false)}
+                    fpsLimit={fpsLimit}
+                    setFpsLimit={setFpsLimit}
+                    mouseDpi={mouseDpi}
+                    setMouseDpi={setMouseDpi}
+                    nickname={nickname}
+                    setNickname={setNickname}
+                />
 
                 {/* Nickname Setup Modal */}
                 {showNicknameSetup && (
@@ -633,6 +649,12 @@ export default function App() {
                         </button>
                         <button className="btn btn-secondary" onClick={handleBackToMenu}>
                             Back to Menu
+                        </button>
+                        <button
+                            className="btn btn-share"
+                            onClick={handleShareScore}
+                        >
+                            {shareStatus === 'copied' ? '✓ Copied!' : '📋 Share Score'}
                         </button>
                     </div>
                 </div>

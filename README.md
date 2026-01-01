@@ -1,5 +1,8 @@
 # TSP Aim Trainer
 
+[![CI](https://github.com/Aseri93/TSPAim/actions/workflows/ci.yml/badge.svg)](https://github.com/Aseri93/TSPAim/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Free browser-based aim trainer with Kovaaks-style scenarios. No download required.
 
 🎯 **[Play Now →](https://tsp-aim.vercel.app)**
