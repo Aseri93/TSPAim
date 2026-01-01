@@ -1,0 +1,8 @@
+# Code Owners
+# These users will be automatically requested for review
+
+# Default owner for everything
+* @Aseri93
+
+# Specific paths (add more as needed)
+/src/ @Aseri93
