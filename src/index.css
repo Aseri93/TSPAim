@@ -144,6 +144,14 @@ body {
   letter-spacing: 0.2em;
 }
 
+.tip {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--warning);
+  opacity: 0.9;
+}
+
 /* Settings / Quick Access Bar */
 .settings-bar {
   display: flex;

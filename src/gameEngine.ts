@@ -109,15 +109,15 @@ export function createGameState(
             // Guided circular pattern: Center -> North -> NE -> East -> SE -> South -> SW -> West -> NW
             // Adjusted Y to avoid HUD (occupied roughly top 100px of 1080p space)
             const positions = [
-                { x: 0.5, y: 0.55, label: 'CENTER' },
-                { x: 0.5, y: 0.15, label: '1' }, // TOP
-                { x: 0.9, y: 0.15, label: '2' }, // NE
-                { x: 0.9, y: 0.55, label: '3' }, // RIGHT
-                { x: 0.9, y: 0.9, label: '4' },  // SE
-                { x: 0.5, y: 0.9, label: '5' },  // BOTTOM
-                { x: 0.1, y: 0.9, label: '6' },  // SW
-                { x: 0.1, y: 0.55, label: '7' }, // LEFT
-                { x: 0.1, y: 0.15, label: '8' }, // NW
+                { x: 0.5, y: 0.525, label: 'CENTER' },
+                { x: 0.5, y: 0.12, label: '1' }, // TOP
+                { x: 0.92, y: 0.12, label: '2' }, // NE
+                { x: 0.92, y: 0.525, label: '3' }, // RIGHT
+                { x: 0.92, y: 0.93, label: '4' },  // SE
+                { x: 0.5, y: 0.93, label: '5' },  // BOTTOM
+                { x: 0.08, y: 0.93, label: '6' },  // SW
+                { x: 0.08, y: 0.525, label: '7' }, // LEFT
+                { x: 0.08, y: 0.12, label: '8' }, // NW
             ];
             positions.forEach((p, i) => {
                 targets.push({
@@ -429,14 +429,14 @@ export function renderGame(
     ctx.fillStyle = isRed ? '#ef4444' : '#000';
     ctx.fillRect(0, 0, width, height);
 
-    // Draw Calibration Guide Circle for Grubby Scenario
+    // Draw Calibration Guide Circle for Compass Rose
     if (scenario.id === 'compass-rose' && state.phase === 'playing') {
         ctx.beginPath();
         // Ellipse that touches the edge targets
-        ctx.ellipse(width / 2, height * 0.525, width * 0.42, height * 0.38, 0, 0, Math.PI * 2);
-        ctx.setLineDash([15, 25]);
-        ctx.strokeStyle = 'rgba(251, 191, 36, 0.08)';
-        ctx.lineWidth = 3;
+        ctx.ellipse(width / 2, height * 0.525, width * 0.42, height * 0.405, 0, 0, Math.PI * 2);
+        ctx.setLineDash([10, 10]);
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.15)'; // More visible
+        ctx.lineWidth = 2;
         ctx.stroke();
         ctx.setLineDash([]);
     }

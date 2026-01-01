@@ -408,6 +408,7 @@ Play: https://tsp-aim.vercel.app`.trim();
                 <header className="header">
                     <h1>TSP Aim Trainer</h1>
                     <p className="subtitle">Optimal Path Training</p>
+                    <p className="tip">Tip: Maximize window instead of F11 for best performance</p>
                 </header>
 
                 {/* Quick Access Bar */}
