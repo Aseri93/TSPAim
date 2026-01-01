@@ -15,7 +15,7 @@ export interface Scenario {
     autoPlay?: boolean; // if true, scenario plays itself (for benchmarks)
     clickLimit?: number; // End game after N clicks (for reaction test)
     noRespawn?: boolean; // If true, targets don't respawn on hit
-    pattern?: 'grid' | 'circle' | 'grubby'; // Custom spawn pattern
+    pattern?: 'grid' | 'circle' | 'compass'; // Custom spawn pattern
 }
 
 export interface ReplayEvent {

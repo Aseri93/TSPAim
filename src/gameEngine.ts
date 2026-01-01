@@ -105,7 +105,7 @@ export function createGameState(
 
     const targets: Target[] = [];
     if (scenario.scoring !== 'reaction') {
-        if (scenario.pattern === 'grubby') {
+        if (scenario.pattern === 'compass') {
             // Guided circular pattern: Center -> North -> NE -> East -> SE -> South -> SW -> West -> NW
             // Adjusted Y to avoid HUD (occupied roughly top 100px of 1080p space)
             const positions = [
@@ -121,7 +121,7 @@ export function createGameState(
             ];
             positions.forEach((p, i) => {
                 targets.push({
-                    id: `target-grubby-${i}`,
+                    id: `target-compass-${i}`,
                     x: p.x * width,
                     y: p.y * height,
                     vx: 0,
@@ -158,13 +158,13 @@ export function createGameState(
         nextSpawnTime: scenario.scoring === 'reaction'
             ? performance.now() + (scenario.id === 'visual-reaction' ? 2000 + Math.random() * 3000 : 1000 + Math.random() * 2000)
             : 0,
-        message: scenario.id === 'visual-reaction' ? 'Wait...' : (scenario.id === 'grubby-rts' ? 'Sensitivity Calibration\nFollow labels 1-8 in a circle.' : undefined),
+        message: scenario.id === 'visual-reaction' ? 'Wait...' : (scenario.id === 'compass-rose' ? 'Hit CENTER, then follow 1-8' : undefined),
         isRed: false,
         cursorX,
         cursorY,
         width,
         height,
-        showPath: (scenario.movement === 'static' || scenario.movement === 'strafe') && scenario.id !== 'grubby-rts',
+        showPath: (scenario.movement === 'static' || scenario.movement === 'strafe') && scenario.id !== 'compass-rose',
         replayLog: [],
         adaptiveSpeed: 1.0,
         adaptiveScore: 0,
@@ -231,7 +231,7 @@ export function respawnTarget(
 
     return state.targets.map(t => {
         if (t.id === targetId) {
-            if (scenario.pattern === 'grubby') {
+            if (scenario.pattern === 'compass') {
                 return { ...t, hit: false }; // Just reset the same target
             }
             return createTarget(
@@ -421,7 +421,7 @@ export function renderGame(
     ctx.fillRect(0, 0, width, height);
 
     // Draw Calibration Guide Circle for Grubby Scenario
-    if (scenario.id === 'grubby-rts' && state.phase === 'playing') {
+    if (scenario.id === 'compass-rose' && state.phase === 'playing') {
         ctx.beginPath();
         // Ellipse that touches the edge targets
         ctx.ellipse(width / 2, height * 0.525, width * 0.42, height * 0.38, 0, 0, Math.PI * 2);

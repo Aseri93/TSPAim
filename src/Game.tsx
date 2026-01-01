@@ -675,7 +675,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                                         if (el) targetElementsRef.current[target.id] = el;
                                         else delete targetElementsRef.current[target.id];
                                     }}
-                                    className={`target-element spawn ${scenario.id === 'grubby-rts' ? 'farm' : ''} ${target.label === 'CENTER' ? 'center-target' : ''}`}
+                                    className={`target-element spawn ${scenario.id === 'compass-rose' ? 'farm' : ''} ${target.label === 'CENTER' ? 'center-target' : ''}`}
                                     onAnimationEnd={(e) => {
                                         // Remove spawn class after animation so JS can control transform
                                         e.currentTarget.classList.remove('spawn');
