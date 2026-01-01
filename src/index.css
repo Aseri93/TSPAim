@@ -472,9 +472,7 @@ body {
   position: relative;
   /* Width/height set dynamically by JavaScript based on aspect ratio */
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* NOTE: No flexbox centering here - children use absolute positioning from top-left */
   transform-origin: center center;
   will-change: transform;
 }
