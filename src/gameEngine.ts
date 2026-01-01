@@ -177,6 +177,9 @@ export function createGameState(
         compassClockwise: isCompass ? true : undefined, // First lap is clockwise
         lapTimes: isCompass ? [] : undefined,
         lapStartTime: undefined,
+        // Calibration
+        calibrationMeasuring: false,
+        calibrationPixels: 0,
     };
 }
 
@@ -438,7 +441,51 @@ export function renderGame(
         ctx.strokeStyle = 'rgba(251, 191, 36, 0.15)'; // More visible
         ctx.lineWidth = 2;
         ctx.stroke();
+        ctx.stroke();
         ctx.setLineDash([]);
+    }
+
+    // Linear Calibration UI
+    if (scenario.id === 'linear-calibration') {
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fff';
+
+        if (state.calibrationMeasuring) {
+            ctx.font = 'bold 48px Inter, sans-serif';
+            ctx.fillText('Move 10cm Right →', width / 2, height / 2 - 50);
+            ctx.font = '32px Inter, sans-serif';
+            ctx.fillText(`Pixels: ${Math.round(state.calibrationPixels || 0)}`, width / 2, height / 2 + 50);
+            ctx.font = '24px Inter, sans-serif';
+            ctx.fillStyle = '#aaa';
+            ctx.fillText('Click to Stop', width / 2, height / 2 + 100);
+        } else {
+            if (state.calibrationPixels && state.calibrationPixels > 0) {
+                const pixels = state.calibrationPixels;
+                const distanceCm = 10;
+                const ppcm = pixels / distanceCm;
+                // eDPI = PPC * 2.54
+                const edpi = ppcm * 2.54;
+
+                ctx.font = 'bold 64px Inter, sans-serif';
+                ctx.fillStyle = '#22c55e';
+                ctx.fillText(`${Math.round(edpi)} eDPI`, width / 2, height / 2 - 20);
+
+                ctx.fillStyle = '#fff';
+                ctx.font = '24px Inter, sans-serif';
+                ctx.fillText(`Mapped ${Math.round(pixels)} px over 10cm`, width / 2, height / 2 + 40);
+
+                ctx.fillStyle = '#aaa';
+                ctx.fillText('Click to Retry', width / 2, height / 2 + 120);
+            } else {
+                ctx.font = '32px Inter, sans-serif';
+                ctx.fillText('1. Place mouse at 0cm on Ruler', width / 2, height / 2 - 40);
+                ctx.fillText('2. Click to Start', width / 2, height / 2 + 10);
+                ctx.fillStyle = '#aaa';
+                ctx.font = '24px Inter, sans-serif';
+                ctx.fillText('(Then move exactly 10cm Right)', width / 2, height / 2 + 60);
+            }
+        }
+        return; // Skip target rendering
     }
 
     // Draw Message (Wait / Too Early / Click)

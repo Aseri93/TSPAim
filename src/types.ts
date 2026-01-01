@@ -69,6 +69,9 @@ export interface GameState {
     compassClockwise?: boolean; // true = clockwise, false = counter-clockwise
     lapTimes?: number[]; // Time for each completed lap
     lapStartTime?: number; // When current lap started
+    // Calibration State
+    calibrationMeasuring?: boolean;
+    calibrationPixels?: number;
 }
 
 export interface GameResults {
