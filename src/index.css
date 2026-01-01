@@ -456,8 +456,7 @@ body {
 /* Zero-Latency Virtual Workspace */
 .virtual-workspace {
   position: relative;
-  width: 1920px;
-  height: 1080px;
+  /* Width/height set dynamically by JavaScript based on aspect ratio */
   overflow: hidden;
   display: flex;
   align-items: center;
