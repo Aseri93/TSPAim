@@ -1106,6 +1106,11 @@ body {
   min-width: 120px;
 }
 
+.setting-row select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
 .setting-row input[type="number"] {
   width: 100px;
 }
