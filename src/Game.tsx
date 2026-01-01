@@ -232,16 +232,19 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                 if (gameStateRef.current) {
                     const oldWidth = gameStateRef.current.width;
 
-                    // Rescale target positions if width changed (maintain relative position)
-                    if (oldWidth !== width && oldWidth > 0 && gameStateRef.current.targets.length > 0) {
-                        const scaleX = width / oldWidth;
+                    // Recalculate target positions using stored relative positions (resolution-independent)
+                    if (oldWidth !== width && gameStateRef.current.targets.length > 0) {
                         gameStateRef.current.targets.forEach(t => {
-                            t.x = t.x * scaleX;
+                            if (t.relX !== undefined && t.relY !== undefined) {
+                                // Resolution-independent: recalculate from relative positions
+                                t.x = t.relX * width;
+                                t.y = t.relY * height;
+                            } else if (oldWidth > 0) {
+                                // Fallback: scale existing pixel positions
+                                const scaleX = width / oldWidth;
+                                t.x = t.x * scaleX;
+                            }
                         });
-                        // Sync React state for initial layout (though DOM updates handle movement)
-                        // setTargets([...gameStateRef.current.targets]); 
-                        // Note: Calling setTargets here causes re-renders during resize which is laggy.
-                        // Since we have direct DOM manipulation in the loop, we trust the loop to update positions.
                     }
 
                     gameStateRef.current.width = width;

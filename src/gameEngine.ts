@@ -128,7 +128,9 @@ export function createGameState(
                     vy: 0,
                     size: scaledSize,
                     hit: false,
-                    label: p.label
+                    label: p.label,
+                    relX: p.x, // Store relative position for resolution-independent resize
+                    relY: p.y,
                 });
             });
         } else {

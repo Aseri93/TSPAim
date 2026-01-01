@@ -35,6 +35,8 @@ export interface Target {
     size: number;
     hit: boolean;
     label?: string; // Optional label for specific scenarios
+    relX?: number; // Relative X position (0-1) for resolution-independent scenarios
+    relY?: number; // Relative Y position (0-1) for resolution-independent scenarios
 }
 
 export interface GameState {
