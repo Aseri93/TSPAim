@@ -378,23 +378,32 @@ Play: https://tsp-aim.vercel.app`.trim();
     if (phase === 'select') {
         return (
             <div className="app">
-                {/* Fixed top-right auth button */}
-                {isSupabaseConfigured && (
-                    <div className="auth-floating">
-                        {isAuthLoading ? (
-                            <span className="auth-loading">Loading...</span>
-                        ) : session ? (
-                            <div className="auth-user">
-                                <span className="auth-username">{session.user.user_metadata?.nickname || session.user.email?.split('@')[0]}</span>
-                                <button onClick={handleLogout} className="auth-btn">Sign Out</button>
-                            </div>
-                        ) : (
-                            <button type="button" onClick={handleLogin} className="auth-btn">
-                                Sign In
-                            </button>
-                        )}
-                    </div>
-                )}
+                {/* Fixed top-right controls (settings + auth) */}
+                <div className="top-right-controls">
+                    <button
+                        className="gear-btn"
+                        onClick={() => setShowSettingsModal(true)}
+                        title="Settings"
+                    >
+                        ⚙️
+                    </button>
+                    {isSupabaseConfigured && (
+                        <>
+                            {isAuthLoading ? (
+                                <span className="auth-loading">Loading...</span>
+                            ) : session ? (
+                                <div className="auth-user">
+                                    <span className="auth-username">{session.user.user_metadata?.nickname || session.user.email?.split('@')[0]}</span>
+                                    <button onClick={handleLogout} className="auth-btn">Sign Out</button>
+                                </div>
+                            ) : (
+                                <button type="button" onClick={handleLogin} className="auth-btn">
+                                    Sign In
+                                </button>
+                            )}
+                        </>
+                    )}
+                </div>
 
                 <header className="header">
                     <h1>TSP Aim Trainer</h1>
@@ -407,21 +416,12 @@ Play: https://tsp-aim.vercel.app`.trim();
                         <span className="player-badge">🎮 {nickname || 'Guest'}</span>
                         <span className="fps-badge">{fpsLimit === 0 ? '∞' : fpsLimit} FPS</span>
                     </div>
-                    <div className="quick-actions">
-                        <button
-                            className="gear-btn"
-                            onClick={() => setShowSettingsModal(true)}
-                            title="Settings"
-                        >
-                            ⚙️
-                        </button>
-                        <button
-                            className="btn-secondary"
-                            onClick={() => setPhase('leaderboard')}
-                        >
-                            Leaderboards
-                        </button>
-                    </div>
+                    <button
+                        className="btn-secondary"
+                        onClick={() => setPhase('leaderboard')}
+                    >
+                        🏆 Leaderboards
+                    </button>
                 </div>
 
                 {/* Category Tabs */}

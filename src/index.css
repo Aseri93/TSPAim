@@ -76,12 +76,16 @@ body {
   position: relative;
 }
 
-/* Floating Auth Button */
+/* Floating Top-Right Controls */
+.top-right-controls,
 .auth-floating {
   position: fixed;
   top: 20px;
   right: 24px;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .auth-btn {
