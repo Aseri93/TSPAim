@@ -41,7 +41,7 @@ export default function App() {
     const [nickname, setNickname] = useState(localStorage.getItem('tspaim_nickname') || '');
     const [mouseDpi, setMouseDpi] = useState(() => {
         const saved = localStorage.getItem('tspaim_mouse_dpi');
-        return saved ? parseInt(saved, 10) : 800; // Default 800
+        return saved ? parseInt(saved, 10) : 0; // 0 = Unset
     });
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);

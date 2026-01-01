@@ -165,7 +165,7 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
                                             {entry.nickname || 'Anonymous'}
                                         </div>
                                     </td>
-                                    <td className="meta-cell">{entry.mouse_dpi || '-'}</td>
+                                    <td className="meta-cell">{(!entry.mouse_dpi || entry.mouse_dpi === 800) ? '-' : entry.mouse_dpi}</td>
                                     <td className="meta-cell">{entry.viewport_w ? `${entry.viewport_w}x${entry.viewport_h}` : '-'}</td>
                                     <td className="meta-cell">{entry.view_scale ? `${entry.view_scale.toFixed(2)}x` : '-'}</td>
                                     <td className="score-cell">
