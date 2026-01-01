@@ -235,7 +235,8 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
                     // Strict Sync: Update canvas if resolution mismatches at all
                     const canvas = canvasRef.current;
-                    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+                    // Use 1x DPI for performance (high-DPI scaling hurts fullscreen perf)
+                    const dpr = 1;
                     const targetW = Math.round(width * dpr);
 
                     if (canvas && Math.abs(canvas.width - targetW) > 1) {
