@@ -60,18 +60,7 @@ export const scenarios: Scenario[] = [
     speed: 1.5,
     category: 'tracking',
   },
-  {
-    id: 'benchmark',
-    name: 'Benchmark',
-    description: 'Auto-plays to test performance. Logs FPS, frame times, and render stats.',
-    duration: 10,
-    targetCount: 6,
-    targetSize: 25,
-    movement: 'static',
-    scoring: 'benchmark',
-    autoPlay: true,
-    category: 'calibration',
-  },
+
   {
     id: 'reaction',
     name: 'Reaction Test',
