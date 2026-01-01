@@ -113,7 +113,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                         />
                     )}
 
-                    <button type="submit" className="auth-submit-btn" disabled={loading}>
+                    <button type="submit" className="btn auth-submit-btn" disabled={loading}>
                         {loading ? 'Processing...' : (
                             authMode === 'magic' ? 'Email Me a Login Link' : (passwordMode === 'signup' ? 'Create Account' : 'Sign In')
                         )}

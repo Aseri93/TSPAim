@@ -105,8 +105,8 @@ export default function SettingsModal({
                 </div>
 
                 <div className="settings-actions">
-                    <button className="btn-secondary" onClick={onClose}>Cancel</button>
-                    <button className="btn-primary" onClick={handleSave}>Save</button>
+                    <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+                    <button className="btn btn-primary" onClick={handleSave}>Save</button>
                 </div>
             </div>
         </div>

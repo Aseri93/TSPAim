@@ -214,42 +214,50 @@ body {
   color: var(--fg-muted);
 }
 
-.nav-btn {
-  background: transparent;
-  border: none;
-  color: var(--fg-muted);
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.nav-btn:hover {
-  color: var(--fg);
-  background: var(--glass-hover);
-}
-
-.auth-btn-primary {
-  background: var(--fg);
-  color: #000;
-  border: none;
+/* Unified Button System */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 8px 16px;
   border-radius: 8px;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  font-family: inherit;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.nav-btn {
+  background: transparent;
+  color: var(--fg-muted);
+  padding: 8px 12px;
+  font-weight: 500;
+}
+
+.nav-btn:hover {
+  color: var(--fg);
+  background: var(--glass-hover);
+  transform: none;
+}
+
+.auth-btn-primary {
+  background: var(--fg);
+  color: #000;
 }
 
 .auth-btn-small {
   background: transparent;
-  border: 1px solid var(--glass-border);
+  border-color: var(--glass-border);
   color: var(--fg-muted);
   padding: 6px 12px;
-  border-radius: 8px;
   font-size: 12px;
-  cursor: pointer;
 }
 
 /* Centered Tabs Container */
@@ -1230,15 +1238,21 @@ body {
   background: #2563eb;
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
 .btn-primary:hover {
   background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ccc;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 .gear-btn {

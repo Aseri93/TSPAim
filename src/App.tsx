@@ -392,14 +392,14 @@ Play: https://tsp-aim.vercel.app`.trim();
                         <div className="nav-divider"></div>
 
                         <button
-                            className="nav-btn"
+                            className="btn nav-btn"
                             onClick={() => setPhase('leaderboard')}
                         >
                             Leaderboards
                         </button>
 
                         <button
-                            className="nav-btn"
+                            className="btn nav-btn"
                             onClick={() => setShowSettingsModal(true)}
                         >
                             Settings
@@ -415,10 +415,10 @@ Play: https://tsp-aim.vercel.app`.trim();
                                 ) : session ? (
                                     <div className="auth-user">
                                         <span className="auth-username">{session.user.user_metadata?.nickname || session.user.email?.split('@')[0]}</span>
-                                        <button onClick={handleLogout} className="auth-btn-small">Sign Out</button>
+                                        <button onClick={handleLogout} className="btn auth-btn-small">Sign Out</button>
                                     </div>
                                 ) : (
-                                    <button type="button" onClick={handleLogin} className="auth-btn-primary">
+                                    <button type="button" onClick={handleLogin} className="btn auth-btn-primary">
                                         Sign In
                                     </button>
                                 )}
