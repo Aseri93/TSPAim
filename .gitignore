@@ -32,3 +32,6 @@ Thumbs.db
 
 # Local network scores
 scores.json
+
+# Agent files
+.agent/
