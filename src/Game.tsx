@@ -742,10 +742,10 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
             >
                 <canvas
                     ref={canvasRef}
-                    // Width/Height managed manually by initGame for DPR support
+                    // Width/Height managed manually - use explicit pixels to match DOM targets exactly
                     style={{
-                        width: '100%',
-                        height: '100%',
+                        width: gameStateRef.current?.width ?? 1920,
+                        height: 1080,
                         cursor: isPlaying ? 'none' : 'default',
                         pointerEvents: 'none',
                         position: 'absolute',
