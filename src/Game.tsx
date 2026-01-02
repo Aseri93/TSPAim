@@ -737,22 +737,17 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
     return (
         <div ref={containerRef} className="game-container">
-            {/* Zero-Latency Virtual Scaling Wrapper */}
+            {/* Full-screen Virtual Workspace - no letterboxing */}
             <div
                 ref={contentRef}
                 className="virtual-workspace"
-                style={{
-                    transform: `scale(${viewScale})`,
-                    pointerEvents: 'none',
-                    '--view-scale': viewScale
-                } as any}
+                style={{ pointerEvents: 'none' }}
             >
                 <canvas
                     ref={canvasRef}
-                    // Width/Height managed manually - use explicit pixels to match DOM targets exactly
                     style={{
-                        width: gameStateRef.current?.width ?? 1920,
-                        height: 1080,
+                        width: '100%',
+                        height: '100%',
                         cursor: isPlaying ? 'none' : 'default',
                         pointerEvents: 'none',
                         position: 'absolute',

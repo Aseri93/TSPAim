@@ -467,13 +467,15 @@ body {
   /* Maximize browser optimization */
 }
 
-/* Zero-Latency Virtual Workspace */
+/* Zero-Latency Virtual Workspace - fills entire container */
 .virtual-workspace {
-  position: relative;
-  /* Width/height set dynamically by JavaScript based on aspect ratio */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  /* NOTE: No flexbox centering here - children use absolute positioning from top-left */
-  transform-origin: center center;
+  transform-origin: top left;
   will-change: transform;
 }
 
