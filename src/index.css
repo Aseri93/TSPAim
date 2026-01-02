@@ -209,6 +209,33 @@ body {
   gap: 12px;
 }
 
+.crosshair-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.crosshair-color-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.1s;
+}
+
+.crosshair-color-btn:hover {
+  transform: scale(1.15);
+}
+
+.crosshair-color-btn.active {
+  border-color: #fff;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
 .nav-divider {
   width: 1px;
   height: 24px;

@@ -62,6 +62,19 @@ export default function App() {
     // Settings Modal State
     const [showSettingsModal, setShowSettingsModal] = useState(false);
 
+    // Crosshair customization
+    const [crosshairColor, setCrosshairColor] = useState(() =>
+        localStorage.getItem('tspaim_crosshair_color') || '#ffffff'
+    );
+    const crosshairColors = [
+        { name: 'White', value: '#ffffff' },
+        { name: 'Red', value: '#ef4444' },
+        { name: 'Green', value: '#22c55e' },
+        { name: 'Cyan', value: '#06b6d4' },
+        { name: 'Yellow', value: '#eab308' },
+        { name: 'Pink', value: '#ec4899' },
+    ];
+
     // Category definitions for tabs
     const categories: { id: Scenario['category'] | 'all'; label: string }[] = [
         { id: 'all', label: 'All' },
@@ -398,6 +411,23 @@ Play: https://tsp-aim.vercel.app`.trim();
                             Leaderboards
                         </button>
 
+                        {/* Crosshair Color Picker */}
+                        <div className="crosshair-picker">
+                            <span style={{ marginRight: 8 }}>⊕</span>
+                            {crosshairColors.map(c => (
+                                <button
+                                    key={c.value}
+                                    className={`crosshair-color-btn ${crosshairColor === c.value ? 'active' : ''}`}
+                                    style={{ backgroundColor: c.value }}
+                                    onClick={() => {
+                                        setCrosshairColor(c.value);
+                                        localStorage.setItem('tspaim_crosshair_color', c.value);
+                                    }}
+                                    title={c.name}
+                                />
+                            ))}
+                        </div>
+
                         <button
                             className="btn nav-btn"
                             onClick={() => setShowSettingsModal(true)}
@@ -554,6 +584,7 @@ Play: https://tsp-aim.vercel.app`.trim();
                 scenario={selectedScenario}
                 fpsLimit={fpsLimit}
                 mouseDpi={mouseDpi}
+                crosshairColor={crosshairColor}
                 onEnd={handleGameEnd}
                 onExit={handleBackToMenu}
             />

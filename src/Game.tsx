@@ -35,9 +35,10 @@ interface GameProps {
     onExit: () => void;
     fpsLimit?: number;
     mouseDpi?: number;
+    crosshairColor?: string;
 }
 
-export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }: GameProps) {
+export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi, crosshairColor = '#ffffff' }: GameProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -570,6 +571,12 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
         const cursorX = state.cursorX;
         const cursorY = state.cursorY;
+
+        // Tracking/adaptive scenarios don't use clicks
+        if (['tracking', 'adaptive'].includes(scenario.scoring)) {
+            return;
+        }
+
         state.shots++;
 
         if ((scenario.id === 'visual-reaction' || scenario.scoring === 'reaction') && !state.isRed && state.targets.length === 0) {
@@ -789,7 +796,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                 )}
                 {isPlaying && (
                     <div className="crosshair-layer" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-                        <div ref={crosshairRef} className="custom-crosshair" />
+                        <div ref={crosshairRef} className="custom-crosshair" style={{ borderColor: crosshairColor, backgroundColor: crosshairColor }} />
                     </div>
                 )}
             </div>
