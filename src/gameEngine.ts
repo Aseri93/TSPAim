@@ -144,9 +144,6 @@ export function createGameState(
     const cursorY = height / 2;
     const optimalPath = solveTSP(targets, cursorX, cursorY);
 
-    // Compass Rose initialization
-    const isCompass = scenario.id === 'wide-grid';
-
     return {
         phase: 'idle',
         targets,
@@ -163,22 +160,16 @@ export function createGameState(
         nextSpawnTime: scenario.scoring === 'reaction'
             ? performance.now() + (scenario.id === 'visual-reaction' ? 2000 + Math.random() * 3000 : 1000 + Math.random() * 2000)
             : 0,
-        message: scenario.id === 'visual-reaction' ? 'Wait...' : (isCompass ? 'Hit CENTER to start' : undefined),
+        message: scenario.id === 'visual-reaction' ? 'Wait...' : undefined,
         isRed: false,
         cursorX,
         cursorY,
         width,
         height,
-        showPath: (scenario.movement === 'static' || scenario.movement === 'strafe') && !isCompass,
+        showPath: scenario.movement === 'static' || scenario.movement === 'strafe',
         replayLog: [],
         adaptiveSpeed: 1.0,
         adaptiveScore: 0,
-        // Compass Rose state
-        compassIndex: isCompass ? 0 : undefined, // Start at CENTER (index 0)
-        compassLap: isCompass ? 1 : undefined,
-        compassClockwise: isCompass ? true : undefined, // First lap is clockwise
-        lapTimes: isCompass ? [] : undefined,
-        lapStartTime: undefined,
     };
 }
 
@@ -440,19 +431,6 @@ export function renderGame(
     // Clear / Background
     ctx.fillStyle = isRed ? '#ef4444' : '#000';
     ctx.fillRect(0, 0, width, height);
-
-    // Draw Calibration Guide Circle for Compass Rose
-    if (scenario.id === 'wide-grid' && state.phase === 'playing') {
-        ctx.beginPath();
-        // Wider ellipse for better edge-to-edge calibration
-        ctx.ellipse(width / 2, height / 2, width * 0.45, height * 0.43, 0, 0, Math.PI * 2);
-        ctx.setLineDash([10, 10]);
-        ctx.strokeStyle = 'rgba(251, 191, 36, 0.2)'; // More visible
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.setLineDash([]);
-    }
 
 
     // Draw Message (Wait / Too Early / Click)
