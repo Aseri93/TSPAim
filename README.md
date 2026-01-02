@@ -1,78 +1,36 @@
-# TSP Aim Trainer
+# TSPAim
 
 [![CI](https://github.com/Aseri93/TSPAim/actions/workflows/ci.yml/badge.svg)](https://github.com/Aseri93/TSPAim/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Free browser-based aim trainer with Kovaaks-style scenarios. No download required.
+Browser-based aim trainer. Free, no download.
 
-🎯 **[Play Now →](https://tsp-aim.vercel.app)**
-
-## Features
-
-- **8 Training Scenarios** — Static, strafing, tracking, calibration, frenzy
-- **Unlimited FPS** — Bypasses VSync for maximum performance
-- **TSP Path Guidance** — Shows optimal target order
-- **Analytics Dashboard** — Visualize Score vs DPI/Resolution
-- **Local & Global Leaderboards** — Track your progress
-- **Zero Input Lag** — Raw mouse input with pointer lock
+**[Play Now](https://tsp-aim.vercel.app)**
 
 ## Scenarios
 
-| Scenario | Type | Description |
-|----------|------|-------------|
-| **Static Grid** | Click | 6 static targets, respawn on hit |
-| **Tiny 15s** | Click | 10 tiny targets, 15 seconds |
-| **Strafing Click** | Click | Targets move left/right |
-| **Smooth Track** | Tracking | Keep cursor on moving target |
-| **🔥 Adaptive Track** | Tracking | Speed increases with accuracy! |
-| **Visual Reaction** | Reaction | Click when screen turns red |
-| **Target Frenzy 100** | Frenzy | Clear 100 static targets |
-| **🌀 Strafing Frenzy 100** | Frenzy | Clear 100 moving targets |
-| **🧭 Compass Rose** | Calibration | Edge-to-edge precision test |
+- Static Grid / Tiny 15s
+- Strafing Click  
+- Smooth & Adaptive Tracking
+- Visual Reaction
+- 100-target Frenzy modes
+- Compass Rose calibration
 
-## Getting Started
-
-### Play Online
-Visit the live site (link above) — works on any modern browser.
-
-### Run Locally
+## Run locally
 
 ```bash
-npm install
-npm run dev
+npm i && npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173)
+## TODO / Known issues
 
-## Tech Stack
+- [ ] Replay viewer for score validation
+- [ ] More tracking scenarios
+- [ ] Mobile support (someday)
+- Path rendering can be janky on some browsers
 
-- **Preact** — Lightweight React alternative
-- **Vite** — Fast build tool
-- **Canvas API** — High-performance rendering
-- **Supabase** — Optional global leaderboards
+## Stack
 
-## Performance
-
-- Targets 1000+ FPS in Unlimited mode
-- Canvas-based rendering (no DOM thrashing)
-- MessageChannel game loop (bypasses setTimeout limits)
-- Resolution-independent (1080p, 1440p, ultrawide support)
-
-## Controls
-
-| Key | Action |
-|-----|--------|
-| **Click** | Shoot target |
-| **ESC** | Exit to menu |
-| **🏠 Logo** | Return to home |
-
-## Leaderboards
-
-The app works in **Offline Mode** by default. To enable global leaderboards:
-
-1. Create a [Supabase](https://supabase.com) project
-2. Copy `.env.example` to `.env.local`
-3. Add your Supabase URL and anon key
+Preact, Vite, Canvas, Supabase (optional)
 
 ## License
 
