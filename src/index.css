@@ -879,13 +879,14 @@ body {
   height: 20px;
   pointer-events: none;
   transform: translate(-50%, -50%);
+  --crosshair-color: #fff;
 }
 
 .custom-crosshair::before,
 .custom-crosshair::after {
   content: '';
   position: absolute;
-  background: #fff;
+  background: var(--crosshair-color);
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
 }
 

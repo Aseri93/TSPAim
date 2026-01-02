@@ -796,7 +796,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi, 
                 )}
                 {isPlaying && (
                     <div className="crosshair-layer" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-                        <div ref={crosshairRef} className="custom-crosshair" style={{ borderColor: crosshairColor, backgroundColor: crosshairColor }} />
+                        <div ref={crosshairRef} className="custom-crosshair" style={{ '--crosshair-color': crosshairColor } as any} />
                     </div>
                 )}
             </div>
