@@ -101,17 +101,6 @@ export const scenarios: Scenario[] = [
     noRespawn: true,
     category: 'challenge',
   },
-  {
-    id: 'wide-grid',
-    name: 'Wide Grid',
-    description: 'Static targets with a calibration ring. Tests your mousepad coverage and edge-to-edge precision.',
-    duration: 30,
-    targetCount: 8,
-    targetSize: 30,
-    movement: 'static',
-    scoring: 'tps', // Use same scoring as Static Grid
-    category: 'calibration',
-  },
 ];
 
 export function getScenario(id: string): Scenario | undefined {
