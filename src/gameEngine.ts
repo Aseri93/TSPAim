@@ -287,15 +287,16 @@ export function updateTargets(
         x += vx * dtScale;
         y += vy * dtScale;
 
-        // Bounce off walls
+        // Bounce off walls with extra buffer for edge safety
         const halfSize = t.size / 2;
-        if (x < halfSize || x > width - halfSize) {
+        const edgeBuffer = 20; // Extra margin to prevent clipping behind black bars
+        if (x < halfSize + edgeBuffer || x > width - halfSize - edgeBuffer) {
             vx = -vx;
-            x = Math.max(halfSize, Math.min(width - halfSize, x));
+            x = Math.max(halfSize + edgeBuffer, Math.min(width - halfSize - edgeBuffer, x));
         }
-        if (y < halfSize || y > height - halfSize) {
+        if (y < halfSize + edgeBuffer || y > height - halfSize - edgeBuffer) {
             vy = -vy;
-            y = Math.max(halfSize, Math.min(height - halfSize, y));
+            y = Math.max(halfSize + edgeBuffer, Math.min(height - halfSize - edgeBuffer, y));
         }
 
         // Smooth tracking: add slight random direction changes
