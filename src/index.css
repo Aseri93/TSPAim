@@ -875,8 +875,8 @@ body {
 
 .custom-crosshair {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   pointer-events: none;
   transform: translate(-50%, -50%);
   --crosshair-color: #fff;

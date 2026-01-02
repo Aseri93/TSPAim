@@ -82,7 +82,6 @@ export default function App() {
         { id: 'speed', label: 'Speed' },
         { id: 'tracking', label: 'Tracking' },
         { id: 'challenge', label: 'Challenge' },
-        { id: 'calibration', label: 'Calibration' },
     ];
 
     // Filter scenarios by active category
@@ -394,7 +393,7 @@ Play: https://tsp-aim.vercel.app`.trim();
                 {/* Modern Navbar */}
                 <nav className="navbar">
                     <div className="nav-brand">
-                        <button className="nav-logo home-btn" onClick={() => setPhase('select')}>🏠 TSPAim</button>
+                        <button className="nav-logo home-btn" onClick={() => setPhase('select')} title="Home">🏠</button>
                     </div>
 
                     <div className="nav-actions">
