@@ -145,7 +145,7 @@ export function createGameState(
     const optimalPath = solveTSP(targets, cursorX, cursorY);
 
     // Compass Rose initialization
-    const isCompass = scenario.id === 'compass-rose';
+    const isCompass = scenario.id === 'wide-grid';
 
     return {
         phase: 'idle',
@@ -432,7 +432,7 @@ export function renderGame(
     ctx.fillRect(0, 0, width, height);
 
     // Draw Calibration Guide Circle for Compass Rose
-    if (scenario.id === 'compass-rose' && state.phase === 'playing') {
+    if (scenario.id === 'wide-grid' && state.phase === 'playing') {
         ctx.beginPath();
         // Wider ellipse for better edge-to-edge calibration
         ctx.ellipse(width / 2, height / 2, width * 0.45, height * 0.43, 0, 0, Math.PI * 2);

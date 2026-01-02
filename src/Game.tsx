@@ -617,7 +617,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
         if (hitTarget) {
             // Compass Rose: Enforce sequence
-            if (scenario.id === 'compass-rose' && state.compassIndex !== undefined) {
+            if (scenario.id === 'wide-grid' && state.compassIndex !== undefined) {
                 const expectedIndex = state.compassIndex;
                 const hitIndex = state.targets.findIndex(t => t.id === hitTarget.id);
 
@@ -761,7 +761,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
                             // Compass Rose: Determine if this target is the active one
                             let isActiveCompass = false;
-                            if (scenario.id === 'compass-rose' && state?.compassIndex !== undefined) {
+                            if (scenario.id === 'wide-grid' && state?.compassIndex !== undefined) {
                                 const expectedIndex = state.compassIndex;
                                 let expectedTargetIndex: number;
                                 if (expectedIndex === 0) {
@@ -775,8 +775,8 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                                 isActiveCompass = actualIdx === expectedTargetIndex;
                             }
 
-                            const isFirst = scenario.id === 'compass-rose' ? isActiveCompass : pathIndex === 0;
-                            const isDimmed = scenario.id === 'compass-rose' && !isActiveCompass;
+                            const isFirst = scenario.id === 'wide-grid' ? isActiveCompass : pathIndex === 0;
+                            const isDimmed = scenario.id === 'wide-grid' && !isActiveCompass;
 
                             return (
                                 <div
@@ -785,7 +785,7 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
                                         if (el) targetElementsRef.current[target.id] = el;
                                         else delete targetElementsRef.current[target.id];
                                     }}
-                                    className={`target-element spawn ${scenario.id === 'compass-rose' ? 'farm' : ''} ${target.label === 'CENTER' ? 'center-target' : ''}`}
+                                    className={`target-element spawn ${scenario.id === 'wide-grid' ? 'farm' : ''} ${target.label === 'CENTER' ? 'center-target' : ''}`}
                                     onAnimationEnd={(e) => {
                                         // Remove spawn class after animation so JS can control transform
                                         e.currentTarget.classList.remove('spawn');

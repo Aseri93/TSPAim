@@ -102,8 +102,8 @@ export const scenarios: Scenario[] = [
     category: 'challenge',
   },
   {
-    id: 'compass-rose',
-    name: 'Compass Rose',
+    id: 'wide-grid',
+    name: 'Wide Grid',
     description: 'Static targets with a calibration ring. Tests your mousepad coverage and edge-to-edge precision.',
     duration: 30,
     targetCount: 8,

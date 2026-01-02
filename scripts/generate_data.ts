@@ -35,7 +35,6 @@ const RESOLUTIONS = [
 ];
 // DPI buckets commonly used by gamers
 const DPIS = [400, 800, 1600, 3200];
-const SENSITIVITIES = [20, 30, 40, 50]; // cm/360 approx equivalent
 
 // Helper: Box-Muller transform for normal distribution
 function randomNormal(mean: number, stdDev: number) {
