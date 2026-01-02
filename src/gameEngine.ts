@@ -194,10 +194,14 @@ export function createTarget(
     let x: number, y: number;
     let attempts = 0;
 
-    // Find non-overlapping position
+    // Use larger margin to account for DPI scaling edge cases
+    const safeMargin = Math.max(margin, size);
+    const topOffset = scenario.scoring === 'reaction' ? 0 : 70; // HUD offset
+
+    // Find non-overlapping position within safe bounds
     do {
-        x = margin + Math.random() * (width - margin * 2 - size);
-        y = (scenario.scoring === 'reaction' ? margin : (margin + 70)) + Math.random() * (height - margin * 2 - size - 70);
+        x = safeMargin + Math.random() * (width - safeMargin * 2);
+        y = safeMargin + topOffset + Math.random() * (height - safeMargin * 2 - topOffset);
         attempts++;
     } while (
         attempts < 100 &&
@@ -207,6 +211,11 @@ export function createTarget(
             return Math.sqrt(dx * dx + dy * dy) < size + t.size + 10;
         })
     );
+
+    // Final bounds clamp for safety
+    const halfSize = size / 2;
+    x = Math.max(halfSize + 10, Math.min(width - halfSize - 10, x));
+    y = Math.max(halfSize + topOffset + 10, Math.min(height - halfSize - 10, y));
 
     // Velocity based on movement type
     let vx = 0, vy = 0;
