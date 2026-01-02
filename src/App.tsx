@@ -462,7 +462,7 @@ Play: https://tsp-aim.vercel.app`.trim();
                     <p className="hero-subtitle">Train your aim with TSP-optimized scenarios</p>
                     <div className="hero-tip">
                         <span className="tip-icon">💡</span>
-                        <span>Tip: Maximize window instead of F11 for best performance</span>
+                        <span>Tip: Maximize window instead of F11 for best performance. Desktop recommended.</span>
                     </div>
                 </header>
 
