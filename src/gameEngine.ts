@@ -245,24 +245,40 @@ export function updateTargets(
         x += vx * dtScale;
         y += vy * dtScale;
 
-        // Bounce off walls with extra buffer for edge safety
+        const speed = scenario.speed || 2;
         const halfSize = t.size / 2;
-        const edgeBuffer = 20; // Extra margin to prevent clipping behind black bars
+        const edgeBuffer = 20;
+
+        // Bounce off walls
+        let bounced = false;
         if (x < halfSize + edgeBuffer || x > width - halfSize - edgeBuffer) {
             vx = -vx;
             x = Math.max(halfSize + edgeBuffer, Math.min(width - halfSize - edgeBuffer, x));
+            bounced = true;
         }
         if (y < halfSize + edgeBuffer || y > height - halfSize - edgeBuffer) {
             vy = -vy;
             y = Math.max(halfSize + edgeBuffer, Math.min(height - halfSize - edgeBuffer, y));
+            bounced = true;
         }
 
-        // Smooth tracking: add slight random direction changes
-        if (scenario.movement === 'smooth' && Math.random() < 0.02) {
-            const angle = Math.atan2(vy, vx) + (Math.random() - 0.5) * 0.5;
-            const speed = scenario.speed || 2;
-            vx = Math.cos(angle) * speed;
-            vy = Math.sin(angle) * speed;
+        // Smooth tracking: add direction variation
+        if (scenario.movement === 'smooth') {
+            // On bounce or randomly (5% chance), add significant direction change
+            if (bounced || Math.random() < 0.05) {
+                const angle = Math.atan2(vy, vx) + (Math.random() - 0.5) * 1.0; // ±28° change
+                vx = Math.cos(angle) * speed;
+                vy = Math.sin(angle) * speed;
+            }
+
+            // Prevent getting stuck in near-horizontal movement
+            if (Math.abs(vy) < speed * 0.3) {
+                vy = (Math.random() > 0.5 ? 1 : -1) * speed * 0.5;
+                // Normalize to maintain speed
+                const currentSpeed = Math.sqrt(vx * vx + vy * vy);
+                vx = (vx / currentSpeed) * speed;
+                vy = (vy / currentSpeed) * speed;
+            }
         }
 
         return { ...t, x, y, vx, vy };
