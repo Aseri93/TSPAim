@@ -1,13 +1,13 @@
-// Pure game engine - no React, just game logic and canvas rendering
+// game engine
 
 import { Scenario, GameState, Target } from './types';
 
-// Distance between two points
+
 export function dist(x1: number, y1: number, x2: number, y2: number): number {
     return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
 
-// TSP Nearest Neighbor solver - finds optimal path from cursor position
+// nearest neighbor TSP
 export function solveTSP(targets: Target[], startX: number, startY: number): Target[] {
     const activeTargets = targets.filter(t => !t.hit);
     if (activeTargets.length === 0) return [];
@@ -40,7 +40,7 @@ export function solveTSP(targets: Target[], startX: number, startY: number): Tar
     return path;
 }
 
-// Calculate total path length
+
 export function calculatePathLength(path: Target[], startX: number, startY: number): number {
     if (path.length === 0) return 0;
 
