@@ -400,6 +400,13 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
             state.targets = updateTargets(state.targets, state.width, state.height, scenario, deltaTime);
 
+            // Force clamp all targets to visible area (handles any edge cases)
+            state.targets.forEach(t => {
+                const hs = t.size / 2 + 5;
+                t.x = Math.max(hs, Math.min(state.width - hs, t.x));
+                t.y = Math.max(hs + 70, Math.min(state.height - hs, t.y));
+            });
+
             if (scenario.scoring === 'tracking') {
                 const target = state.targets[0];
                 if (target && isCursorOnTarget(state.cursorX, state.cursorY, target)) {
