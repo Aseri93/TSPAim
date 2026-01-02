@@ -10,12 +10,12 @@ export interface Scenario {
     targetSize: number; // base size at 1080p
     movement: 'static' | 'strafe' | 'smooth';
     scoring: 'tps' | 'accuracy' | 'tracking' | 'benchmark' | 'reaction' | 'adaptive';
-    category: 'precision' | 'speed' | 'tracking' | 'challenge' | 'calibration';
+    category: 'precision' | 'speed' | 'tracking' | 'challenge';
     speed?: number; // movement speed for non-static scenarios
     autoPlay?: boolean; // if true, scenario plays itself (for benchmarks)
     clickLimit?: number; // End game after N clicks (for reaction test)
     noRespawn?: boolean; // If true, targets don't respawn on hit
-    pattern?: 'grid' | 'circle' | 'compass'; // Custom spawn pattern
+    pattern?: 'grid' | 'circle'; // Custom spawn pattern
 }
 
 export interface ReplayEvent {
@@ -65,12 +65,6 @@ export interface GameState {
     // Adaptive tracking
     adaptiveSpeed: number; // Current speed multiplier (1.0 = base)
     adaptiveScore: number; // Accumulated score based on speed
-    // Compass Rose state
-    compassIndex?: number; // Current target index in sequence (0-8)
-    compassLap?: number; // Current lap number (1, 2, 3...)
-    compassClockwise?: boolean; // true = clockwise, false = counter-clockwise
-    lapTimes?: number[]; // Time for each completed lap
-    lapStartTime?: number; // When current lap started
 }
 
 export interface GameResults {

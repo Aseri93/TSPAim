@@ -105,38 +105,8 @@ export function createGameState(
 
     const targets: Target[] = [];
     if (scenario.scoring !== 'reaction') {
-        if (scenario.pattern === 'compass') {
-            // Guided circular pattern: Center -> North -> NE -> East -> SE -> South -> SW -> West -> NW
-            // Margins: 12% from X edges, 15%/85% for Y to avoid HUD and bottom browser chrome
-            const positions = [
-                { x: 0.5, y: 0.5, label: 'CENTER' },
-                { x: 0.5, y: 0.15, label: '1' }, // TOP
-                { x: 0.88, y: 0.15, label: '2' }, // NE
-                { x: 0.88, y: 0.5, label: '3' }, // RIGHT
-                { x: 0.88, y: 0.85, label: '4' },  // SE
-                { x: 0.5, y: 0.85, label: '5' },  // BOTTOM
-                { x: 0.12, y: 0.85, label: '6' },  // SW
-                { x: 0.12, y: 0.5, label: '7' }, // LEFT
-                { x: 0.12, y: 0.15, label: '8' }, // NW
-            ];
-            positions.forEach((p, i) => {
-                targets.push({
-                    id: `target-compass-${i}`,
-                    x: p.x * width,
-                    y: p.y * height,
-                    vx: 0,
-                    vy: 0,
-                    size: scaledSize,
-                    hit: false,
-                    label: p.label,
-                    relX: p.x, // Store relative position for resolution-independent resize
-                    relY: p.y,
-                });
-            });
-        } else {
-            for (let i = 0; i < scenario.targetCount; i++) {
-                targets.push(createTarget(i, width, height, scaledSize, margin, scenario, targets));
-            }
+        for (let i = 0; i < scenario.targetCount; i++) {
+            targets.push(createTarget(i, width, height, scaledSize, margin, scenario, targets));
         }
     }
 
@@ -242,9 +212,6 @@ export function respawnTarget(
 
     return state.targets.map(t => {
         if (t.id === targetId) {
-            if (scenario.pattern === 'compass') {
-                return { ...t, hit: false }; // Just reset the same target
-            }
             return createTarget(
                 0,
                 state.width,
