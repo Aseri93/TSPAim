@@ -81,6 +81,7 @@ export default function SettingsModal({
                             type="number"
                             value={localDpi === 0 ? '' : localDpi}
                             onInput={(e) => setLocalDpi(parseInt(e.currentTarget.value) || 0)}
+                            placeholder="Unknown"
                             min={100}
                             max={32000}
                         />
