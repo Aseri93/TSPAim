@@ -15,11 +15,6 @@ Browser-based aim trainer. Free, no download.
 - 100-target Frenzy modes
 - Compass Rose calibration
 
-## Run locally
-
-```bash
-npm i && npm run dev
-```
 
 ## TODO / Known issues
 
