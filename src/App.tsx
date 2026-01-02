@@ -2,6 +2,7 @@ import { useState, useEffect } from 'preact/hooks';
 import { scenarios } from './scenarios';
 import Game from './Game';
 import Leaderboard from './Leaderboard';
+import UserStats from './UserStats';
 import './index.css';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { Session } from '@supabase/supabase-js';
@@ -9,7 +10,7 @@ import AuthModal from './AuthModal';
 import SettingsModal from './SettingsModal';
 import { GameResults, Scenario } from './types';
 
-type AppPhase = 'select' | 'playing' | 'results' | 'leaderboard';
+type AppPhase = 'select' | 'playing' | 'results' | 'leaderboard' | 'stats';
 
 
 
@@ -410,6 +411,13 @@ Play: https://tsp-aim.vercel.app`.trim();
                             Leaderboards
                         </button>
 
+                        <button
+                            className="btn nav-btn"
+                            onClick={() => setPhase('stats')}
+                        >
+                            Stats
+                        </button>
+
                         {/* Crosshair Color Picker */}
                         <div className="crosshair-picker">
                             <span style={{ marginRight: 8 }}>⊕</span>
@@ -709,6 +717,10 @@ Play: https://tsp-aim.vercel.app`.trim();
 
     if (phase === 'leaderboard') {
         return <Leaderboard onBack={() => setPhase('select')} />;
+    }
+
+    if (phase === 'stats') {
+        return <UserStats onBack={() => setPhase('select')} />;
     }
 
     return null;

@@ -1328,3 +1328,130 @@ body {
   z-index: 9999;
   will-change: transform;
 }
+
+/* User Stats Page */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.stats-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.stats-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stats-card.overview .stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.stats-card.overview .stat-row:last-child {
+  border-bottom: none;
+}
+
+.stats-card.overview strong {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+}
+
+.best-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.best-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.best-item .score {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+}
+
+.best-item .score.no-score {
+  color: var(--fg-muted);
+}
+
+.card-subtitle {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin: 0 0 12px 0;
+}
+
+.dpi-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dpi-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.dpi-item.top {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.dpi-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+
+.dpi-avg {
+  color: var(--accent);
+}
+
+.dpi-count {
+  color: var(--fg-muted);
+  font-size: 11px;
+}
+
+.best-badge {
+  margin-left: auto;
+  color: #22c55e;
+  font-size: 12px;
+}
+
+.resolution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.resolution-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--fg-muted);
+}
