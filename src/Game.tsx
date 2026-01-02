@@ -67,31 +67,22 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         fpsIntervalRef.current = fpsLimit > 0 ? 1000 / fpsLimit : 0;
     }, [fpsLimit]);
 
-    // Initialize resolution relative to container
+    // Initialize resolution relative to container - use actual dimensions, no virtual scaling
     const initGame = useCallback(() => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
         if (rect.height === 0) return;
 
-        const height = 1080; // Fixed vertical reference
-        const aspect = rect.width / rect.height;
-        const width = Math.round(height * aspect);
+        // Use actual container dimensions directly - no letterboxing
+        const width = Math.round(rect.width);
+        const height = Math.round(rect.height);
 
-        const MIN_SCALE = 0.5;
-        // Scale based on height to maintain vertical FOV
-        const scale = Math.max(MIN_SCALE, rect.height / height);
-
-        setViewScale(scale);
-        viewScaleRef.current = scale;
+        setViewScale(1); // No scaling needed
+        viewScaleRef.current = 1;
 
         const state = createGameState(scenario, width, height);
         gameStateRef.current = state;
         setTargets([...state.targets]);
-
-        if (contentRef.current) {
-            contentRef.current.style.width = `${width}px`;
-            contentRef.current.style.height = `${height}px`;
-        }
 
         const canvas = canvasRef.current;
         if (canvas) {
@@ -215,53 +206,36 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
         const resizeObserver = new ResizeObserver(() => {
             const rect = containerRef.current?.getBoundingClientRect();
             if (rect && rect.height > 0) {
-                const height = 1080;
-                const aspect = rect.width / rect.height;
-                const width = Math.round(height * aspect);
+                // Use actual container dimensions - no virtual scaling
+                const width = Math.round(rect.width);
+                const height = Math.round(rect.height);
 
-                const MIN_SCALE = 0.5;
-                const scale = Math.max(MIN_SCALE, rect.height / height);
-                setViewScale(scale);
-                viewScaleRef.current = scale;
-
-                if (contentRef.current) {
-                    contentRef.current.style.width = `${width}px`;
-                    contentRef.current.style.height = `${height}px`;
-                }
+                setViewScale(1);
+                viewScaleRef.current = 1;
 
                 // Update game state dimensions dynamically
                 if (gameStateRef.current) {
                     const oldWidth = gameStateRef.current.width;
+                    const oldHeight = gameStateRef.current.height;
 
-                    // Recalculate target positions using stored relative positions (resolution-independent)
-                    if (oldWidth !== width && gameStateRef.current.targets.length > 0) {
+                    // Scale target positions to new dimensions
+                    if ((oldWidth !== width || oldHeight !== height) && gameStateRef.current.targets.length > 0) {
+                        const scaleX = width / oldWidth;
+                        const scaleY = height / oldHeight;
                         gameStateRef.current.targets.forEach(t => {
-                            if (t.relX !== undefined && t.relY !== undefined) {
-                                // Resolution-independent: recalculate from relative positions
-                                t.x = t.relX * width;
-                                t.y = t.relY * height;
-                            } else if (oldWidth > 0) {
-                                // Fallback: scale existing pixel positions
-                                const scaleX = width / oldWidth;
-                                t.x = t.x * scaleX;
-                            }
+                            t.x = t.x * scaleX;
+                            t.y = t.y * scaleY;
                         });
                     }
 
                     gameStateRef.current.width = width;
-                    // We don't update height as it's fixed 1080
+                    gameStateRef.current.height = height;
 
-                    // Strict Sync: Update canvas if resolution mismatches at all
+                    // Sync canvas to container
                     const canvas = canvasRef.current;
-                    // Use 1x DPI for performance (high-DPI scaling hurts fullscreen perf)
-                    const dpr = 1;
-                    const targetW = Math.round(width * dpr);
-
-                    if (canvas && Math.abs(canvas.width - targetW) > 1) {
-                        canvas.width = targetW;
-                        canvas.height = height * dpr;
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    if (canvas && (canvas.width !== width || canvas.height !== height)) {
+                        canvas.width = width;
+                        canvas.height = height;
                     }
                 }
             }
@@ -544,23 +518,11 @@ export default function Game({ scenario, onEnd, onExit, fpsLimit = 0, mouseDpi }
 
             // Clamp to virtual bounds
             state.cursorX = Math.max(0, Math.min(state.width, state.cursorX));
-            state.cursorY = Math.max(0, Math.min(1080, state.cursorY));
+            state.cursorY = Math.max(0, Math.min(state.height, state.cursorY));
         } else {
-            // Map window coordinates to virtual space, accounting for centering offset
-            // The virtual workspace is centered in the container.
-            // visual_x = (cursorX * viewScale) + offset_x
-            // offset_x = (rect.width - (1920 * viewScale)) / 2
-            // cursorX = (visual_x - offset_x) / viewScale
-
-            const relativeX = e.clientX - rect.left;
-            const relativeY = e.clientY - rect.top;
-
-            const virtualW = state.width;
-            const offsetX = (rect.width - (virtualW * viewScaleRef.current)) / 2;
-            const offsetY = (rect.height - (1080 * viewScaleRef.current)) / 2;
-
-            state.cursorX = (relativeX - offsetX) / viewScaleRef.current;
-            state.cursorY = (relativeY - offsetY) / viewScaleRef.current;
+            // Direct coordinate mapping - no scaling needed
+            state.cursorX = e.clientX - rect.left;
+            state.cursorY = e.clientY - rect.top;
         }
 
         const now = performance.now();
