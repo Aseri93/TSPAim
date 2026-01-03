@@ -16,10 +16,10 @@ export const scenarios: Scenario[] = [
   {
     id: 'tiny-15s',
     name: 'Tiny 15s',
-    description: '15 seconds. Tiny targets. Mimics mouseaccuracy.com tiny mode.',
+    description: '15 seconds. Tiny targets. Test your precision under pressure.',
     duration: 15,
     targetCount: 10,
-    targetSize: 12,
+    targetSize: 18,
     movement: 'static',
     scoring: 'tps',
     category: 'precision',
