@@ -2,7 +2,31 @@ import { useEffect, useState } from 'preact/hooks';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { scenarios } from './scenarios';
 
+// Helper to keep only the best score per player (by nickname for display consistency)
+// We deduplicate by nickname since that's what users see on the leaderboard
+const deduplicateByPlayer = (scores: any[], isReaction: boolean): any[] => {
+    const bestByPlayer = new Map<string, any>();
 
+    for (const score of scores) {
+        // Use nickname as the key - this is what users see on the leaderboard
+        const key = (score.nickname || 'Anonymous').toLowerCase().trim();
+        const existing = bestByPlayer.get(key);
+
+        if (!existing) {
+            bestByPlayer.set(key, score);
+        } else {
+            // For reaction time, lower is better; for other scenarios, higher is better
+            const isBetter = isReaction
+                ? score.score < existing.score
+                : score.score > existing.score;
+            if (isBetter) {
+                bestByPlayer.set(key, score);
+            }
+        }
+    }
+
+    return Array.from(bestByPlayer.values());
+};
 
 interface LeaderboardProps {
     onBack: () => void;
@@ -32,6 +56,8 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
         let rankings = raw ? JSON.parse(raw) : [];
         rankings = rankings.filter((r: any) => r.scenario_id === scenarioId);
         const isReaction = scenarioId.includes('reaction');
+        // Deduplicate to show only best score per player
+        rankings = deduplicateByPlayer(rankings, isReaction);
         rankings.sort((a: any, b: any) => isReaction ? a.score - b.score : b.score - a.score);
         setEntries(rankings);
         setLoading(false);
@@ -45,6 +71,8 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
             // Filter and sort
             data = data.filter((r: any) => r.scenario_id === scenarioId);
             const isReaction = scenarioId.includes('reaction');
+            // Deduplicate to show only best score per player
+            data = deduplicateByPlayer(data, isReaction);
             data.sort((a: any, b: any) => isReaction ? a.score - b.score : b.score - a.score);
             setEntries(data);
         } catch (e) {
@@ -57,6 +85,9 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
     const fetchGlobalScores = async () => {
         if (!supabase) return;
         setLoading(true);
+        const isReaction = scenarioId.includes('reaction');
+
+        // Fetch more entries to allow for deduplication, then trim
         const { data, error } = await supabase
             .from('scores')
             .select(`
@@ -73,13 +104,17 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
             .eq('scenario_id', scenarioId)
             .not('nickname', 'ilike', 'Pro_Player_%')
             .not('nickname', 'ilike', 'Player_%')
-            .order('score', { ascending: scenarioId.includes('reaction') })
-            .limit(50);
+            .order('score', { ascending: isReaction })
+            .limit(200); // Fetch more to ensure enough unique players
 
         if (error) {
             console.error('Error fetching global leaderboard:', error);
         } else {
-            setEntries(data || []);
+            // Deduplicate to show only best score per player
+            let deduplicated = deduplicateByPlayer(data || [], isReaction);
+            // Re-sort and limit to 50 for display
+            deduplicated.sort((a: any, b: any) => isReaction ? a.score - b.score : b.score - a.score);
+            setEntries(deduplicated.slice(0, 50));
         }
         setLoading(false);
     };

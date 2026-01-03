@@ -241,10 +241,9 @@ export default function App() {
             setScoresVersion(v => v + 1);
         }
 
-        // 1. Always try Local Network save if nickname exists (Ensure everyone shows on LAN)
-        // We now allow all scores to be saved for DPI/Resolution calibration tracking
+        // 1. Try Local/Network save if nickname exists - only upload to leaderboards if new best
         if (nickname.trim()) {
-            await saveGuestScore(gameResults, nickname.trim());
+            await saveGuestScore(gameResults, nickname.trim(), isNewBest);
         }
 
         // 2. Try Global Supabase save if logged in OR nickname provided AND new best
@@ -340,51 +339,54 @@ Play: https://tsp-aim.vercel.app`.trim();
         localStorage.setItem(key, JSON.stringify(rankings.slice(0, 50)));
     };
 
-    const saveGuestScore = async (res: GameResults, name: string) => {
+    const saveGuestScore = async (res: GameResults, name: string, isNewBest: boolean = false) => {
         setIsSaving(true);
-        // 1. Save to Device (Immediate fallback)
+        // 1. Save to Device (Always save for local analytics)
         saveLocalScore(res, name);
 
-        // 2. Save to Network (Shared with friends on LAN)
-        try {
-            await fetch('/api/scores', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+        // Only save to network/global leaderboards if it's a new personal best
+        if (isNewBest) {
+            // 2. Save to Network (Shared with friends on LAN)
+            try {
+                await fetch('/api/scores', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        scenario_id: res.scenario.id,
+                        score: res.primary,
+                        nickname: name,
+                        mouse_dpi: res.mouseDpi,
+                        viewport_w: res.viewportW,
+                        viewport_h: res.viewportH,
+                        device_pixel_ratio: res.devicePixelRatio,
+                        view_scale: res.viewScale
+                    })
+                });
+            } catch (e) {
+                console.error("Network save failed:", e);
+            }
+
+            // 3. Save to Global (Supabase)
+            if (supabase && isSupabaseConfigured) {
+                const { error } = await supabase.from('scores').insert({
                     scenario_id: res.scenario.id,
                     score: res.primary,
                     nickname: name,
+                    replay_data: res.replayLog || null,
                     mouse_dpi: res.mouseDpi,
                     viewport_w: res.viewportW,
                     viewport_h: res.viewportH,
                     device_pixel_ratio: res.devicePixelRatio,
                     view_scale: res.viewScale
-                })
-            });
-        } catch (e) {
-            console.error("Network save failed:", e);
-        }
-
-        // 3. Save to Global (Supabase)
-        if (supabase && isSupabaseConfigured) {
-            const { error } = await supabase.from('scores').insert({
-                scenario_id: res.scenario.id,
-                score: res.primary,
-                nickname: name,
-                replay_data: res.replayLog || null,
-                mouse_dpi: res.mouseDpi,
-                viewport_w: res.viewportW,
-                viewport_h: res.viewportH,
-                device_pixel_ratio: res.devicePixelRatio,
-                view_scale: res.viewScale
-            });
-            if (error) {
-                console.error("Global save failed:", error);
+                });
+                if (error) {
+                    console.error("Global save failed:", error);
+                }
             }
         }
 
         setIsSaving(false);
-        setSaveSuccess(true);
+        setSaveSuccess(isNewBest); // Only show success if saved to leaderboard
     };
 
     // Scenario Selection Screen
@@ -673,11 +675,11 @@ Play: https://tsp-aim.vercel.app`.trim();
                                 }}
                                 disabled={isSaving || saveSuccess}
                             />
-                            {nickname.trim() && !saveSuccess && (
+                            {nickname.trim() && !saveSuccess && isHighScore && (
                                 <button
                                     className="btn btn-primary"
                                     style={{ display: 'block', margin: '0 auto 20px' }}
-                                    onClick={() => saveGuestScore(results, nickname)}
+                                    onClick={() => saveGuestScore(results, nickname, isHighScore)}
                                     disabled={isSaving}
                                 >
                                     {isSaving ? 'Uploading...' : 'Upload to Leaderboard'}
